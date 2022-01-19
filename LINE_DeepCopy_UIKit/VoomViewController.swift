@@ -14,13 +14,10 @@ class VoomViewController: UIViewController {
         
         view.backgroundColor = .background
         
-        let leadingBarItem = UIBarButtonItem(title: "LINE VOOM", style: .plain, target: nil, action: nil)
-        leadingBarItem.tintColor = .white
-        leadingBarItem.setTitleTextAttributes([NSAttributedString.Key.font: UIFont.systemFont(ofSize: 23, weight: .black)], for: .normal)
+        let leadingBarItem = UIBarButtonItemLabel("LINE VOOM")
         navigationItem.leftBarButtonItem = leadingBarItem
         
-        let trailingBarItem = UIBarButtonItem(image: UIImage(systemName: "person.circle.fill")!.forUIBarButtonItem, style: .plain, target: self, action: #selector(presentContactView))
-        trailingBarItem.tintColor = .white
+        let trailingBarItem = UIBarButtonItemButton(image: UIImage(systemName: "person.circle.fill")!)
         navigationItem.rightBarButtonItem = trailingBarItem
     }
 

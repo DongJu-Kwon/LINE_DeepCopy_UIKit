@@ -14,18 +14,12 @@ class ChatViewController: UIViewController {
         
         view.backgroundColor = .background
         
-        let leadingBarItem = UIBarButtonItem(title: "대화", style: .plain, target: nil, action: nil)
-        leadingBarItem.tintColor = .white
-        leadingBarItem.setTitleTextAttributes([NSAttributedString.Key.font: UIFont.systemFont(ofSize: 23, weight: .black)], for: .normal)
+        let leadingBarItem = UIBarButtonItemLabel("대화")
         navigationItem.leftBarButtonItem = leadingBarItem
         
-        let newChatRoomTrailingBarItem = UIBarButtonItem(image: UIImage(systemName: "person.circle.fill")!.forUIBarButtonItem, style: .plain, target: nil, action: nil)
-        newChatRoomTrailingBarItem.tintColor = .white
-        let editChatListTrailingBarItem = UIBarButtonItem(image: UIImage(systemName: "list.dash")!.forUIBarButtonItem, style: .plain, target: nil, action: nil)
-        editChatListTrailingBarItem.tintColor = .white
+        let newChatRoomTrailingBarItem = UIBarButtonItemButton(image: UIImage(systemName: "person.circle.fill")!)
+        let editChatListTrailingBarItem = UIBarButtonItemButton(image: UIImage(systemName: "list.dash")!)
         navigationItem.rightBarButtonItems = [newChatRoomTrailingBarItem, editChatListTrailingBarItem]
-        
-        
         
         
     }
