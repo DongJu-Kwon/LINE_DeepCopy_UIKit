@@ -9,13 +9,18 @@
 /* Begin PBXBuildFile section */
 		6E26D96C2796AE770068CB9A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E26D96B2796AE770068CB9A /* AppDelegate.swift */; };
 		6E26D96E2796AE770068CB9A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E26D96D2796AE770068CB9A /* SceneDelegate.swift */; };
-		6E26D9702796AE770068CB9A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E26D96F2796AE770068CB9A /* ViewController.swift */; };
+		6E26D9702796AE770068CB9A /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E26D96F2796AE770068CB9A /* HomeViewController.swift */; };
 		6E26D9732796AE770068CB9A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6E26D9712796AE770068CB9A /* Main.storyboard */; };
 		6E26D9752796AE780068CB9A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6E26D9742796AE780068CB9A /* Assets.xcassets */; };
 		6E26D9782796AE780068CB9A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6E26D9762796AE780068CB9A /* LaunchScreen.storyboard */; };
 		6E26D9832796AE780068CB9A /* LINE_DeepCopy_UIKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E26D9822796AE780068CB9A /* LINE_DeepCopy_UIKitTests.swift */; };
 		6E26D98D2796AE780068CB9A /* LINE_DeepCopy_UIKitUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E26D98C2796AE780068CB9A /* LINE_DeepCopy_UIKitUITests.swift */; };
 		6E26D98F2796AE780068CB9A /* LINE_DeepCopy_UIKitUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E26D98E2796AE780068CB9A /* LINE_DeepCopy_UIKitUITestsLaunchTests.swift */; };
+		6E26D9E42796CF2A0068CB9A /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E26D9E32796CF2A0068CB9A /* ChatViewController.swift */; };
+		6E26D9E62796CF390068CB9A /* VoomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E26D9E52796CF390068CB9A /* VoomViewController.swift */; };
+		6E26D9E82796CF3E0068CB9A /* CallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E26D9E72796CF3E0068CB9A /* CallViewController.swift */; };
+		6E26D9EA2796D05F0068CB9A /* common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E26D9E92796D05F0068CB9A /* common.swift */; };
+		6E26DA2C2797069D0068CB9A /* CustomNavigationController.swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E26DA2B2797069D0068CB9A /* CustomNavigationController.swift.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,7 +44,7 @@
 		6E26D9682796AE770068CB9A /* LINE_DeepCopy_UIKit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LINE_DeepCopy_UIKit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E26D96B2796AE770068CB9A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6E26D96D2796AE770068CB9A /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		6E26D96F2796AE770068CB9A /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		6E26D96F2796AE770068CB9A /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		6E26D9722796AE770068CB9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		6E26D9742796AE780068CB9A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6E26D9772796AE780068CB9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -49,6 +54,11 @@
 		6E26D9882796AE780068CB9A /* LINE_DeepCopy_UIKitUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LINE_DeepCopy_UIKitUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E26D98C2796AE780068CB9A /* LINE_DeepCopy_UIKitUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LINE_DeepCopy_UIKitUITests.swift; sourceTree = "<group>"; };
 		6E26D98E2796AE780068CB9A /* LINE_DeepCopy_UIKitUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LINE_DeepCopy_UIKitUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		6E26D9E32796CF2A0068CB9A /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
+		6E26D9E52796CF390068CB9A /* VoomViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoomViewController.swift; sourceTree = "<group>"; };
+		6E26D9E72796CF3E0068CB9A /* CallViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallViewController.swift; sourceTree = "<group>"; };
+		6E26D9E92796D05F0068CB9A /* common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = common.swift; sourceTree = "<group>"; };
+		6E26DA2B2797069D0068CB9A /* CustomNavigationController.swift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavigationController.swift.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,7 +111,12 @@
 			children = (
 				6E26D96B2796AE770068CB9A /* AppDelegate.swift */,
 				6E26D96D2796AE770068CB9A /* SceneDelegate.swift */,
-				6E26D96F2796AE770068CB9A /* ViewController.swift */,
+				6E26D9E92796D05F0068CB9A /* common.swift */,
+				6E26DA2B2797069D0068CB9A /* CustomNavigationController.swift.swift */,
+				6E26D96F2796AE770068CB9A /* HomeViewController.swift */,
+				6E26D9E32796CF2A0068CB9A /* ChatViewController.swift */,
+				6E26D9E52796CF390068CB9A /* VoomViewController.swift */,
+				6E26D9E72796CF3E0068CB9A /* CallViewController.swift */,
 				6E26D9712796AE770068CB9A /* Main.storyboard */,
 				6E26D9742796AE780068CB9A /* Assets.xcassets */,
 				6E26D9762796AE780068CB9A /* LaunchScreen.storyboard */,
@@ -258,9 +273,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6E26D9702796AE770068CB9A /* ViewController.swift in Sources */,
+				6E26D9EA2796D05F0068CB9A /* common.swift in Sources */,
+				6E26D9702796AE770068CB9A /* HomeViewController.swift in Sources */,
 				6E26D96C2796AE770068CB9A /* AppDelegate.swift in Sources */,
+				6E26DA2C2797069D0068CB9A /* CustomNavigationController.swift.swift in Sources */,
+				6E26D9E62796CF390068CB9A /* VoomViewController.swift in Sources */,
+				6E26D9E42796CF2A0068CB9A /* ChatViewController.swift in Sources */,
 				6E26D96E2796AE770068CB9A /* SceneDelegate.swift in Sources */,
+				6E26D9E82796CF3E0068CB9A /* CallViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -444,7 +464,6 @@
 				INFOPLIST_FILE = LINE_DeepCopy_UIKit/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -472,7 +491,6 @@
 				INFOPLIST_FILE = LINE_DeepCopy_UIKit/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
