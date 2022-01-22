@@ -20,6 +20,18 @@ extension Margin where Self: UIView {
     func setWidth(_ size: CGFloat) {
         self.widthAnchor.constraint(equalToConstant: size).isActive = true
     }
+    func setFullWidth(target: UIView) {
+        self.leadingAnchor.constraint(equalTo: target.safeAreaLayoutGuide.leadingAnchor).isActive = true
+        self.trailingAnchor.constraint(equalTo: target.safeAreaLayoutGuide.trailingAnchor).isActive = true
+    }
+    func setFullHeight(target: UIView) {
+        self.topAnchor.constraint(equalTo: target.safeAreaLayoutGuide.topAnchor).isActive = true
+        self.bottomAnchor.constraint(equalTo: target.safeAreaLayoutGuide.bottomAnchor).isActive = true
+    }
+    func setFullLayout(target: UIView) {
+        self.setFullWidth(target: target)
+        self.setFullHeight(target: target)
+    }
     
     func setHeight(_ size: CGFloat) {
         self.heightAnchor.constraint(equalToConstant: size).isActive = true
@@ -39,7 +51,11 @@ extension Margin where Self: UIView {
     }
     
     func setHorizontalMargin(target: UIView, _ size: CGFloat) {
-        self.leftAnchor.constraint(equalTo: target.leftAnchor, constant: size).isActive = true
-        self.rightAnchor.constraint(equalTo: target.rightAnchor, constant: -size).isActive = true
+//        self.leftAnchor.constraint(equalTo: target.leftAnchor, constant: size).isActive = true
+//        self.rightAnchor.constraint(equalTo: target.rightAnchor, constant: -size).isActive = true
+        self.leadingAnchor.constraint(equalTo: target.leadingAnchor, constant: size).isActive = true
+        self.trailingAnchor.constraint(equalTo: target.trailingAnchor, constant: -size).isActive = true
     }
 }
+
+extension UITableView: Margin {}

@@ -11,6 +11,9 @@ class CallViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        print(UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.windowScene?.statusBarManager?.statusBarFrame.height ?? -1
+        )
+        print(self.navigationController?.navigationBar.frame.height)
         
         view.backgroundColor = .background
         
@@ -40,14 +43,17 @@ class CallViewController: UIViewController {
         navigationItem.rightBarButtonItem = trailingBarItem
         
         informButton.addTarget(self, action: #selector(presentContactView), for: .touchUpInside)
-        (trailingBarItem.customView as! UIButton).addTarget(self, action: #selector(presentContactView), for: .touchUpInside)
+        trailingBarItem.button.addTarget(self, action: #selector(presentContactView), for: .touchUpInside)
     }
     
     @objc func presentContactView() {
-        print("1")
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
+//        let callViewController = ContactViewController()
+//        callViewController.modalPresentationStyle = .overFullScreen
+//        present(callViewController, animated: true)
+        
+        let callViewController = CustomNavigationController(rootViewController: ContactViewController())
+        callViewController.modalPresentationStyle = .overFullScreen
+        present(callViewController, animated: true)
         
     }
 }
@@ -94,7 +100,6 @@ private class InformButton: UIButton {
         self.backgroundColor = .background
         self.setBackgroundColor(color: .selectedGray!, forState: .highlighted)
         
- 
         self.translatesAutoresizingMaskIntoConstraints = false
     }
     

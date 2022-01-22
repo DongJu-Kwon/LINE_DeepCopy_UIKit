@@ -23,18 +23,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let navigationControllerArray = tabViewArray.map {
             CustomNavigationController(rootViewController: $0)
         }
-        navigationControllerArray.forEach {
-            $0.navigationBar.backgroundColor = .background
-        }
         
         tabViewArray[0].tabBarItem = UITabBarItem(title: "홈", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house.fill"))
         tabViewArray[1].tabBarItem = UITabBarItem(title: "대화", image: UIImage(systemName: "message"), selectedImage: UIImage(systemName: "message.fill"))
         tabViewArray[2].tabBarItem = UITabBarItem(title: "VOOM", image: UIImage(systemName: "play"), selectedImage: UIImage(systemName: "play.fill"))
         tabViewArray[3].tabBarItem = UITabBarItem(title: "통화", image: UIImage(systemName: "phone"), selectedImage: UIImage(systemName: "phone.fill"))
         
+        tabViewArray.forEach {
+            $0.tabBarItem.setTitleTextAttributes([NSAttributedString.Key.font : UIFont.forTabBarItemTitle], for: .normal)
+        }
+        
         tabbarController.tabBar.tintColor = .white
         tabbarController.tabBar.unselectedItemTintColor = .white
         tabbarController.tabBar.barTintColor = .background
+        tabbarController.tabBar.isTranslucent = false
         
         tabbarController.setViewControllers(navigationControllerArray, animated: false)
         

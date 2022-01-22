@@ -8,5 +8,14 @@
 import UIKit
 
 class CustomNavigationController: UINavigationController {
-    
+    override func viewDidLoad() {
+        
+        navigationBar.shadowImage = UIImage()
+        navigationBar.backgroundColor = .background
+        navigationBar.isTranslucent = false
+//        navigationBar.barTintColor = .background
+        navigationBar.barStyle = UIBarStyle.black
+        
+        navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white, .font: UIFont.forNavigationTitle]
+    }
 }

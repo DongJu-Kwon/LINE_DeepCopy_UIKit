@@ -10,8 +10,20 @@
 import UIKit
 
 extension UIFont {
+    static var forTabBarItemTitle: UIFont {
+        UIFont.systemFont(ofSize: 9, weight: .black)
+    }
+    
+    static var forNavigationTitle: UIFont {
+        UIFont.systemFont(ofSize: 20, weight: .bold)
+    }
+    
     static var forUIBarButtonItem: UIFont {
         UIFont.systemFont(ofSize: 23, weight: .black)
+    }
+    
+    static var forTextFieldPlaceholder: UIFont {
+        UIFont.systemFont(ofSize: 12, weight: .medium)
     }
     
     static var forProfileUIBarButtonItem: UIFont {
@@ -28,5 +40,9 @@ extension UIFont {
     
     static var forInformButton: UIFont {
         UIFont.systemFont(ofSize: 13, weight: .semibold)
+    }
+    
+    static var forContactName: UIFont {
+        UIFont.systemFont(ofSize: 12, weight: .light)
     }
 }

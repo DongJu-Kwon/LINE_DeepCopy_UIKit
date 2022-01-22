@@ -8,6 +8,8 @@
 import UIKit
 
 class ChatViewController: UIViewController {
+    
+    let textFieldView = CustomTextFieldView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,11 +23,20 @@ class ChatViewController: UIViewController {
         let editChatListTrailingBarItem = UIBarButtonItemButton(image: UIImage(systemName: "list.dash")!)
         navigationItem.rightBarButtonItems = [newChatRoomTrailingBarItem, editChatListTrailingBarItem]
         
+        textFieldView.textField.delegate = self
+        view.addSubview(textFieldView)
+        textFieldView.setHorizontalMargin(target: view, Constants.TextField.Margin.horizontal)
+        textFieldView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
+        textFieldView.setHeight(Constants.TextField.ViewHeight.ifself)
         
     }
 
     override func viewDidAppear(_ animated: Bool) {
 //        (self.view.window?.rootViewController as! UITabBarController).tabBar.isHidden = true
     }
+}
+
+extension ChatViewController: UITextFieldDelegate {
+    
 }
 
