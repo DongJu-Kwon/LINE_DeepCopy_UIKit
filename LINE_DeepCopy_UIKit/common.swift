@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import Then
 
 extension UIImage {
     private func resized(to size: CGSize) -> UIImage {
@@ -17,6 +18,10 @@ extension UIImage {
     
     func resizedToSquare(number: CGFloat) -> UIImage {
         return self.resized(to: CGSize(width: number, height: number)).withRenderingMode(.alwaysTemplate)
+    }
+    
+    var forNavigationBarXmarkImage: UIImage {
+        self.resizedToSquare(number: Constants.NavigationBar.ImageHeight.xmark)
     }
     
     var forProfileUIBarButtonItem: UIImage {
@@ -46,18 +51,25 @@ extension UIImage {
     var forContactCallImage: UIImage {
         self.resizedToSquare(number: Constants.ContactCell.ImageHeight.call)
     }
+    
+    var forContactDetailProfileImage: UIImage {
+        self.resizedToSquare(number: Constants.ContactDetailView.ProfileView.ImageHeight.profile)
+    }
+    
+    var forContactDetailButtonImage: UIImage {
+        self.resizedToSquare(number: Constants.ContactDetailView.ButtonView.ImageHeight.itself)
+    }
 }
 
 class UIBarButtonItemLabel: UIBarButtonItem {
     init(_ string: String, isProfile: Bool = false) {
         super.init()
         
-        let label = UILabel()
-        label.text = string
-        label.textColor = .white
-        label.font = isProfile ? .forProfileUIBarButtonItem : .forUIBarButtonItem
-        
-        self.customView = label
+        self.customView = UILabel().then {
+            $0.text = string
+            $0.textColor = .white
+            $0.font = isProfile ? .forProfileUIBarButtonItem : .forUIBarButtonItem
+        }
     }
     
     required init?(coder: NSCoder) {
@@ -66,24 +78,16 @@ class UIBarButtonItemLabel: UIBarButtonItem {
 }
 
 class UIBarButtonItemButton: UIBarButtonItem {
-    public var button: UIButton!
+    public var button = UIButton().then {
+        $0.tintColor = .white
+    }
     
-    init(image: UIImage, isProfile: Bool = false) {
+    init(image: UIImage, defaultHeight: Bool = true) {
         super.init()
         
-        button = UIButton()
-        button.setImage(isProfile ? image.forProfileUIBarButtonItem : image.forUIBarButtonItem, for: .normal)
-        if let target = target, let action = action {
-            button.addTarget(target, action: action, for: .touchUpInside)
-        }
-        button.tintColor = .white
+        button.setImage(defaultHeight ? image.forUIBarButtonItem : image, for: .normal)
         
         self.customView = button
-    }
-
-    convenience init(image: UIImage, target: Any?, action: Selector, isProfile: Bool = false) {
-        self.init(image: image, isProfile: isProfile)
-        (self.customView as! UIButton).addTarget(target, action: action, for: .touchUpInside)
     }
     
     required init?(coder: NSCoder) {
@@ -92,9 +96,24 @@ class UIBarButtonItemButton: UIBarButtonItem {
 }
 
 class CustomTextFieldView: UIView {
-    let searchImageView = UIImageView(image: UIImage(systemName: "magnifyingglass")!.forTextfieldSearchImage)
-    let barcodeImageView = UIImageView(image: UIImage(systemName: "barcode.viewfinder")!.forTextfieldBarcodeImage)
-    let textField = UITextField()
+    let searchImageView = UIImageView(image: UIImage(systemName: "magnifyingglass")!.forTextfieldSearchImage).then {
+        $0.tintColor = .gray
+        $0.translatesAutoresizingMaskIntoConstraints = false
+    }
+    let barcodeImageView = UIImageView(image: UIImage(systemName: "barcode.viewfinder")!.forTextfieldBarcodeImage).then {
+        $0.tintColor = .gray
+        $0.translatesAutoresizingMaskIntoConstraints = false
+    }
+    let textField = UITextField().then {
+        $0.textColor = .gray
+        $0.backgroundColor = .selectedGray
+        $0.clearButtonMode = .whileEditing
+        $0.attributedPlaceholder = NSAttributedString(string: "검색", attributes: [
+            NSAttributedString.Key.foregroundColor: UIColor.gray,
+            NSAttributedString.Key.font : UIFont.forTextFieldPlaceholder
+        ])
+        $0.translatesAutoresizingMaskIntoConstraints = false
+    }
     
     init(forContactView: Bool = false) {
         super.init(frame: .zero)
@@ -102,18 +121,7 @@ class CustomTextFieldView: UIView {
         self.layer.cornerRadius = 6
         self.clipsToBounds = true
         
-        searchImageView.tintColor = .gray
-        searchImageView.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(searchImageView)
-        
-        textField.textColor = .gray
-        textField.backgroundColor = .selectedGray
-        textField.clearButtonMode = .whileEditing
-        textField.attributedPlaceholder = NSAttributedString(string: "검색", attributes: [
-            NSAttributedString.Key.foregroundColor: UIColor.gray,
-            NSAttributedString.Key.font : UIFont.forTextFieldPlaceholder
-        ])
-        textField.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(textField)
         
         NSLayoutConstraint.activate([
@@ -128,8 +136,6 @@ class CustomTextFieldView: UIView {
         if forContactView {
 //            textField.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: Constants.TextField.Padding.textfieldTrailingForContact).isActive = true
         } else {
-            barcodeImageView.tintColor = .gray
-            barcodeImageView.translatesAutoresizingMaskIntoConstraints = false
             self.addSubview(barcodeImageView)
             
             NSLayoutConstraint.activate([
@@ -149,27 +155,21 @@ class CustomTextFieldView: UIView {
     }
 }
 
-extension CustomTextFieldView: Margin {}
-
 class CustomLabel: UILabel {
+    let paragraphStyle = NSMutableParagraphStyle().then {
+        $0.lineSpacing = 2.7
+        $0.alignment = .center
+    }
+    
     init(_ string: String) {
         super.init(frame: .zero)
         
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = 2.7
-        paragraphStyle.alignment = .center
-        
         self.attributedText = NSAttributedString(string: string, attributes: [.paragraphStyle: paragraphStyle])
-        
         self.translatesAutoresizingMaskIntoConstraints = false
     }
     
     convenience init(_ string: String, alignLeft: Bool) {
         self.init(string)
-        
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = 2.7
-        paragraphStyle.alignment = .center
         
         self.attributedText = NSAttributedString(string: string, attributes: [.paragraphStyle: paragraphStyle])
     }
@@ -178,8 +178,6 @@ class CustomLabel: UILabel {
         fatalError("init(coder:) has not been implemented")
     }
 }
-
-extension CustomLabel: Margin {}
 
 class CustomScrollView: UIScrollView {
     init() {
@@ -193,8 +191,6 @@ class CustomScrollView: UIScrollView {
     }
 }
 
-extension CustomScrollView: Margin {}
-
 class CustomView: UIView {
     init() {
         super.init(frame: .zero)
@@ -206,5 +202,3 @@ class CustomView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 }
-
-extension CustomView: Margin {}

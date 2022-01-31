@@ -14,10 +14,6 @@ extension UIFont {
         UIFont.systemFont(ofSize: 9, weight: .black)
     }
     
-    static var forNavigationTitle: UIFont {
-        UIFont.systemFont(ofSize: 20, weight: .bold)
-    }
-    
     static var forUIBarButtonItem: UIFont {
         UIFont.systemFont(ofSize: 23, weight: .black)
     }
@@ -44,5 +40,13 @@ extension UIFont {
     
     static var forContactName: UIFont {
         UIFont.systemFont(ofSize: 12, weight: .light)
+    }
+    
+    static var forContactDetailProfileFriendName: UIFont {
+        UIFont.systemFont(ofSize: 30, weight: .bold)
+    }
+    
+    static var forContactDetailButton: UIFont {
+        UIFont.systemFont(ofSize: 10, weight: .regular)
     }
 }

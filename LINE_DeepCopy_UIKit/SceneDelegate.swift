@@ -17,11 +17,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
-        let tabbarController = UITabBarController()
-        
         let tabViewArray = [HomeViewController(), ChatViewController(), VoomViewController(), CallViewController()]
         let navigationControllerArray = tabViewArray.map {
             CustomNavigationController(rootViewController: $0)
+        }
+        
+        let tabbarController = UITabBarController().then {
+            $0.tabBar.tintColor = .white
+            $0.tabBar.unselectedItemTintColor = .white
+            $0.tabBar.barTintColor = .background
+            $0.tabBar.isTranslucent = false
+            
+            $0.setViewControllers(navigationControllerArray, animated: false)
         }
         
         tabViewArray[0].tabBarItem = UITabBarItem(title: "홈", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house.fill"))
@@ -32,13 +39,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         tabViewArray.forEach {
             $0.tabBarItem.setTitleTextAttributes([NSAttributedString.Key.font : UIFont.forTabBarItemTitle], for: .normal)
         }
-        
-        tabbarController.tabBar.tintColor = .white
-        tabbarController.tabBar.unselectedItemTintColor = .white
-        tabbarController.tabBar.barTintColor = .background
-        tabbarController.tabBar.isTranslucent = false
-        
-        tabbarController.setViewControllers(navigationControllerArray, animated: false)
         
         window = UIWindow(windowScene: windowScene)
         window?.rootViewController = tabbarController

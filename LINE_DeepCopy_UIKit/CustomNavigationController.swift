@@ -1,5 +1,5 @@
 //
-//  CustomNavigationController.swift.swift
+//  CustomNavigationController.swift
 //  LINE_DeepCopy_UIKit
 //
 //  Created by 권동주 on 2022/01/18.
@@ -15,7 +15,5 @@ class CustomNavigationController: UINavigationController {
         navigationBar.isTranslucent = false
 //        navigationBar.barTintColor = .background
         navigationBar.barStyle = UIBarStyle.black
-        
-        navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white, .font: UIFont.forNavigationTitle]
     }
 }

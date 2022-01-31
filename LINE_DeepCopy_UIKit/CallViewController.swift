@@ -15,26 +15,26 @@ class CallViewController: UIViewController {
         )
         print(self.navigationController?.navigationBar.frame.height)
         
-        view.backgroundColor = .background
+        self.view.backgroundColor = .background
         
-        let informTitleLabel = InformTitleLabel("지금 LINE 음성통화를 사용해 보세요.")
-        self.view.addSubview(informTitleLabel)
+        let informButton = InformButton("연락처에서 전화하기").then {
+            self.view.addSubview($0)
+            $0.setCenter(target: self.view)
+            $0.setWidth(132)
+            $0.setHeight(36)
+        }
         
-        let informContentLabel = InformContentLabel("LINE 음성통화로 언제 어디서나 친구와 대화를 나눌 수 있습니다.")
-        self.view.addSubview(informContentLabel)
+        let informContentLabel = InformContentLabel("LINE 음성통화로 언제 어디서나 친구와 대화를 나눌 수 있습니다.").then {
+            self.view.addSubview($0)
+            $0.setBottomMargin(target: informButton, 18)
+            $0.setHorizontalMargin(target: self.view, 48)
+        }
         
-        let informButton = InformButton("연락처에서 전화하기")
-        self.view.addSubview(informButton)
-        
-        informButton.setCenter(target: self.view)
-        informButton.setWidth(132)
-        informButton.setHeight(36)
-        
-        informContentLabel.setBottomMargin(target: informButton, 18)
-        informContentLabel.setHorizontalMargin(target: self.view, 48)
-        
-        informTitleLabel.setBottomMargin(target: informContentLabel, 5)
-        informTitleLabel.setHorizontalMargin(target: self.view, 0)
+        let informTitleLabel = InformTitleLabel("지금 LINE 음성통화를 사용해 보세요.").then {
+            self.view.addSubview($0)
+            $0.setBottomMargin(target: informContentLabel, 5)
+            $0.setHorizontalMargin(target: self.view, 0)
+        }
         
         let leadingBarItem = UIBarButtonItemLabel("통화")
         navigationItem.leftBarButtonItem = leadingBarItem
@@ -51,8 +51,9 @@ class CallViewController: UIViewController {
 //        callViewController.modalPresentationStyle = .overFullScreen
 //        present(callViewController, animated: true)
         
-        let callViewController = CustomNavigationController(rootViewController: ContactViewController())
-        callViewController.modalPresentationStyle = .overFullScreen
+        let callViewController = CustomNavigationController(rootViewController: ContactViewController()).then {
+            $0.modalPresentationStyle = .overFullScreen
+        }
         present(callViewController, animated: true)
         
     }
@@ -120,4 +121,3 @@ private class InformButton: UIButton {
     }
 }
 
-extension InformButton: Margin {}

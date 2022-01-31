@@ -9,8 +9,8 @@ import Foundation
 import UIKit
 
 class Friend {
-    var image: UIImage!
-    var name: String!
+    var image: UIImage
+    var name: String
     
     init(image: UIImage, name: String) {
         self.image = image
@@ -19,6 +19,8 @@ class Friend {
 }
 
 class FriendList {
+    static let shared = FriendList()
+    
     private init() {}
     
     private static var imageArray = [
@@ -31,11 +33,11 @@ class FriendList {
         UIImage(systemName: "stop.circle")!,
     ]
     
-    static var friendArray: [Friend] = [
+    private static var friendArray: [Friend] = [
         "권오승",
         "김민서소영",
         "김시본",
-        "깡견",
+        "깡견깡견깡견깡견깡견깡견깡견깡견깡견깡견",
         "린파나요우",
         "맹돌이",
         "배현규",
@@ -69,30 +71,27 @@ class FriendList {
         "..",
         "ウジュ",
         "😱😱😱",
-    ]
-        .shuffled()
-        .map {
-            Friend(image: FriendList.imageArray.randomElement()!, name: $0)
+    ].shuffled().map {
+        Friend(image: FriendList.imageArray.randomElement()!, name: $0)
     }
-    
-//    static var indexedFriendArray: [String: [Friend]] = {
-//        friendArray.sorted(by: {
-//            return $0.name < $1.name
-//        })
-//    }
     
     private let hangul = ["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"]
 
     private func consonant(word: String) -> String {
         let octal = word.unicodeScalars[word.unicodeScalars.startIndex].value
-        let index = (octal - 0xac00) / 28 / 21
+        let index = Int((octal - 0xac00) / 28 / 21)
         
-        return hangul[Int(index)]
+        switch index {
+        case 1, 4, 8, 10, 13:
+            return hangul[index-1]
+        default:
+            return hangul[index]
+        }
     }
     
     private func groupKey(string: String) -> String {
         switch string.first! {
-        case "A"..."Z", "a"..."z", "ㄱ"..."ㅎ":
+        case "ㄱ"..."ㅎ", "A"..."Z", "a"..."z":
             return String(string.first!.uppercased())
         case "가"..."힣":
             return consonant(word: string)
@@ -101,12 +100,30 @@ class FriendList {
         }
     }
     
-    // let b = Dictionary(grouping: a, by: { groupKey(string: $0)})
-    
-    var sortedFriendWithKey: [String: [Friend]] {
+    public var sortedFriendWithKey: [(String, [Friend])] {
+        let dictionary = Dictionary(grouping: FriendList.friendArray) {
+            FriendList.shared.groupKey(string: $0.name)
+        }
         
-        
-        
-        return [:]
+        return Array(dictionary.keys).sorted {
+            switch ($0, $1) {
+            case ("ㄱ"..."ㅎ", "ㄱ"..."ㅎ"), ("A"..."Z", "A"..."Z"):
+                return $0 < $1
+            case ("ㄱ"..."ㅎ", "A"..."Z"):
+                return true
+            case ("A"..."Z", "ㄱ"..."ㅎ"):
+                return false
+            case ("ㄱ"..."ㅎ", _), ("A"..."Z", _):
+                return true
+            case (_, "ㄱ"..."ㅎ"), (_, "A"..."Z"):
+                return false
+            default:
+                return true
+            }
+        }.map {
+            ($0, dictionary[$0]!.sorted {
+                $0.name < $1.name
+            })
+        }
     }
 }

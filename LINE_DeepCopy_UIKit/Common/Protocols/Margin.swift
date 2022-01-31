@@ -58,4 +58,4 @@ extension Margin where Self: UIView {
     }
 }
 
-extension UITableView: Margin {}
+extension UIView: Margin {}

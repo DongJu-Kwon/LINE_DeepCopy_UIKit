@@ -13,7 +13,7 @@ class HomeViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         view.backgroundColor = .background
-        let profileImageLeadingBarItem = UIBarButtonItemButton(image: UIImage(systemName: "person.circle.fill")!, isProfile: true)
+        let profileImageLeadingBarItem = UIBarButtonItemButton(image: UIImage(systemName: "person.circle.fill")!.forProfileUIBarButtonItem, defaultHeight: false)
         let profileNicknameLeadingBarIten = UIBarButtonItemLabel("temp", isProfile: true)
         navigationItem.leftBarButtonItems = [profileImageLeadingBarItem, profileNicknameLeadingBarIten]
         

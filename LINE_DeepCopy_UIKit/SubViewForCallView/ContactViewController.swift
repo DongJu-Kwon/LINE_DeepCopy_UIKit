@@ -6,11 +6,15 @@
 //
 
 import UIKit
+import Then
 
 class ContactViewController: UIViewController {
     
     let textFieldView = CustomTextFieldView(forContactView: true)
-    var tableView: UITableView!
+    let tableView = UITableView(frame: .zero, style: .grouped).then {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.sectionFooterHeight = 0
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,15 +32,25 @@ class ContactViewController: UIViewController {
         view.addSubview(statusBarView)
         
         self.title = "연락처"
+//        let titleLabel = UILabel()
+//        let attributes: [NSString : AnyObject] = [NSFontAttributeName: UIFont.systemFontOfSize(12), NSForegroundColorAttributeName: colour, NSKernAttributeName : 5.0]
+//        titleLabel.attributedText = NSAttributedString(string: "My String", attributes: [
+//
+//        ])
+//        titleLabel.sizeToFit()
+//        self.navigationItem.titleView = titleLabel
+        
 //        navigationBar.tintColor = .white
 //        navigationBar.barTintColor = .gray
 //        navigationBar.backgroundColor = .green
 //        print(self.navigationBar.frame.height)
         
-        let trailingBarItem = UIBarButtonItemButton(image: UIImage(systemName: "xmark")!)
+        let trailingBarItem = UIBarButtonItemButton(image: UIImage(systemName: "xmark")!.forNavigationBarXmarkImage, defaultHeight: false)
         navigationItem.rightBarButtonItem = trailingBarItem
         
         trailingBarItem.button.addTarget(self, action: #selector(dismissView), for: .touchUpInside)
+        
+        navigationItem.backButtonDisplayMode = .minimal
         
         textFieldView.textField.delegate = self
         view.addSubview(textFieldView)
@@ -44,47 +58,16 @@ class ContactViewController: UIViewController {
         textFieldView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
         textFieldView.setHeight(Constants.TextField.ViewHeight.ifself)
         
-        tableView = UITableView(frame: .zero, style: .grouped)
         tableView.delegate = self
         tableView.dataSource = self
         view.addSubview(tableView)
         tableView.register(ContactTableCell.classForCoder(), forCellReuseIdentifier: "cell")
         tableView.tableFooterView = UIView(frame: .zero)
-        tableView.sectionFooterHeight = 0
+        tableView.separatorStyle = .none
         
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-//        tableView.setFullLayout(target: view)
         tableView.setFullWidth(target: view)
         tableView.topAnchor.constraint(equalTo: textFieldView.bottomAnchor, constant: 15).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-        
-//        let scrollView = CustomScrollView()
-//        self.view.addSubview(scrollView)
-//        scrollView.setFullLayout(target: view)
-//        scrollView.backgroundColor = .blue
-//
-//        let contentView = CustomView()
-//        contentView.backgroundColor = .purple
-//        scrollView.addSubview(contentView)
-//
-//        NSLayoutConstraint.activate([
-//            contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
-//            contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
-//            contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
-//            contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
-//            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
-//        ])
-//
-//        let contentViewHeight = contentView.heightAnchor.constraint(greaterThanOrEqualTo: view.heightAnchor)
-//        contentViewHeight.priority = .defaultLow
-//        contentViewHeight.isActive = true
-//
-//        let contactFriendView = ContactFriendView(image: UIImage(systemName: "flame.circle")!, name: "Baek Gayoung")
-//        contentView.addSubview(contactFriendView)
-//        contactFriendView.setFullWidth(target: contentView)
-//        contactFriendView.setHeight(Constants.ContactCellHeight)
-//        contactFriendView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10).isActive = true
-//        contactFriendView.backgroundColor = .brown
     }
     
     @objc func dismissView() {
@@ -112,18 +95,21 @@ extension ContactViewController: UITextFieldDelegate {
 
 extension ContactViewController: UITableViewDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 10
+        return FriendList.shared.sortedFriendWithKey.count
     }
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "asdf"
+        return FriendList.shared.sortedFriendWithKey[section].0
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //do Navigation!
+        print(indexPath)
+        let contactDetailViewController = ContactDetailViewController()
+        contactDetailViewController.friend = FriendList.shared.sortedFriendWithKey[indexPath.section].1[indexPath.row]
+        self.navigationController?.pushViewController(contactDetailViewController, animated: true)
     }
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let view = UIView()
-        view.backgroundColor = .background
-        return view
+        return UIView().then {
+            $0.backgroundColor = .background
+        }
     }
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return Constants.ContactCell.ViewHeight.section
@@ -134,18 +120,19 @@ extension ContactViewController: UITableViewDelegate {
 }
 extension ContactViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return FriendList.friendArray.count
+        return FriendList.shared.sortedFriendWithKey[section].1.count
     }
-    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as! ContactTableCell
-        
-        cell.profileImageView.image = FriendList.friendArray[indexPath.row].image.forContactProfileImage
-        cell.profileNameLabel.text = FriendList.friendArray[indexPath.row].name
-        
-        cell.backgroundColor = .background//UIColor(red: .random(in: 0.1...0.3), green: .random(in: 0.1...0.3), blue: .random(in: 0.1...0.3), alpha: 1)
-        
-        return cell
+        return (tableView.dequeueReusableCell(withIdentifier: "cell") as! ContactTableCell).then {
+            let friend = FriendList.shared.sortedFriendWithKey[indexPath.section].1[indexPath.row]
+            $0.profileImageView.image = friend.image.forContactProfileImage
+            $0.profileNameLabel.text = friend.name
+            
+            $0.backgroundColor = .background
+            $0.selectedBackgroundView = UIView().then {
+                $0.backgroundColor = .background
+            }
+        }
     }
 }
 
@@ -153,15 +140,16 @@ class ContactTableCell: UITableViewCell {
     
     var profileImageView: ContactProfileImageView!
     var profileNameLabel: ContactProfileNameLabel!
-    let callImageView = UIImageView(image: UIImage(systemName: "phone")!.forContactCallImage)
+    let callImageView = UIImageView(image: UIImage(systemName: "phone")!.forContactCallImage).then {
+        $0.tintColor = .gray
+        $0.translatesAutoresizingMaskIntoConstraints = false
+    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         profileImageView = ContactProfileImageView()
         profileNameLabel = ContactProfileNameLabel()
-        callImageView.tintColor = .gray
-        callImageView.translatesAutoresizingMaskIntoConstraints = false
         
         contentView.addSubview(profileImageView)
         contentView.addSubview(profileNameLabel)
@@ -172,9 +160,9 @@ class ContactTableCell: UITableViewCell {
             profileNameLabel.centerYAnchor.constraint(equalTo: safeAreaLayoutGuide.centerYAnchor),
             callImageView.centerYAnchor.constraint(equalTo: safeAreaLayoutGuide.centerYAnchor),
             
-            profileImageView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 10),
-            profileNameLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: 10),
-            callImageView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -18),
+            profileImageView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 12),
+            profileNameLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: 12),
+            callImageView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -20),
         ])
     }
     
@@ -184,17 +172,19 @@ class ContactTableCell: UITableViewCell {
 }
 
 class ContactProfileImageView: UIImageView {
-    let lineImageView = UIImageView(image: UIImage(systemName: "message.fill")!.forContactLineImage)
+    let lineImageView = UIImageView(image: UIImage(systemName: "message.fill")!.forContactLineImage).then {
+        $0.tintColor = .green
+        $0.translatesAutoresizingMaskIntoConstraints = false
+    }
     
     init() {
         super.init(frame: .zero)
         
-        lineImageView.tintColor = .green
-        
         addSubview(lineImageView)
-        lineImageView.translatesAutoresizingMaskIntoConstraints = false
-        lineImageView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
-        lineImageView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
+        NSLayoutConstraint.activate([
+            lineImageView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            lineImageView.trailingAnchor.constraint(equalTo: self.trailingAnchor)
+        ])
         
         self.translatesAutoresizingMaskIntoConstraints = false
     }
@@ -203,29 +193,25 @@ class ContactProfileImageView: UIImageView {
         fatalError("init(coder:) has not been implemented")
     }
 }
-
-extension ContactProfileImageView: Margin {}
 
 class ContactProfileNameLabel: UILabel {
     init() {
         super.init(frame: .zero)
         
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.alignment = .left
-        paragraphStyle.lineBreakMode = .byTruncatingTail
+        let paragraphStyle = NSMutableParagraphStyle().then {
+            $0.alignment = .left
+            $0.lineBreakMode = .byTruncatingTail
+        }
         
         self.attributedText = NSAttributedString(string: "", attributes: [.paragraphStyle: paragraphStyle])
-        
-        self.translatesAutoresizingMaskIntoConstraints = false
-        
         self.numberOfLines = 1
         self.font = .forContactName
         self.textColor = .white
+        
+        self.translatesAutoresizingMaskIntoConstraints = false
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }
-
-extension ContactProfileNameLabel: Margin {}
