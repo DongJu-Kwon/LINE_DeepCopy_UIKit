@@ -38,6 +38,14 @@ extension UIFont {
         UIFont.systemFont(ofSize: 13, weight: .semibold)
     }
     
+    static var forCallCellName: UIFont {
+        UIFont.systemFont(ofSize: 12.5, weight: .regular)
+    }
+    
+    static var forCallCellDate: UIFont {
+        UIFont.systemFont(ofSize: 10.5, weight: .regular)
+    }
+    
     static var forContactName: UIFont {
         UIFont.systemFont(ofSize: 12, weight: .light)
     }

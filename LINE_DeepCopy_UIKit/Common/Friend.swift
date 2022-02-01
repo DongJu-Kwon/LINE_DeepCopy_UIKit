@@ -9,12 +9,75 @@ import Foundation
 import UIKit
 
 class Friend {
+    class CallHistory {
+        enum FromType {
+            enum send {
+                case cancelled
+                case called(Int)
+            }
+            enum receive {
+                case missed
+                case called(Int)
+            }
+            
+            case sender(send)
+            case receiver(receive)
+        }
+        enum CallType {
+            case voice
+            case video
+        }
+        
+        var callType: CallType
+        var fromType: FromType
+        var date: Date
+        weak var parent: Friend!
+        
+        init(type: CallType, from: FromType, date: Date, parent: Friend) {
+            self.callType = type
+            self.fromType = from
+            self.date = date
+            self.parent = parent
+        }
+    }
+    
     var image: UIImage
     var name: String
+    var callHistory: [CallHistory] = []
     
     init(image: UIImage, name: String) {
         self.image = image
         self.name = name
+    }
+    
+    var sortedCallHistory: [CallHistory] {
+        self.callHistory.sorted {
+            $0.date > $1.date
+        }
+    }
+    
+    var lastCallHistroy: CallHistory? {
+        self.sortedCallHistory.first
+    }
+}
+
+extension Friend: Equatable, Hashable {
+    static func == (lhs: Friend, rhs: Friend) -> Bool {
+        return lhs.name == rhs.name
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(self.name)
+    }
+}
+
+extension Friend.CallHistory: Equatable, Hashable {
+    static func == (lhs: Friend.CallHistory, rhs: Friend.CallHistory) -> Bool {
+        return lhs.date == rhs.date
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(self.date)
     }
 }
 
@@ -23,57 +86,7 @@ class FriendList {
     
     private init() {}
     
-    private static var imageArray = [
-        UIImage(systemName: "flame.circle")!,
-        UIImage(systemName: "person.circle")!,
-        UIImage(systemName: "person.crop.circle")!,
-        UIImage(systemName: "circle.circle")!,
-        UIImage(systemName: "graduationcap.circle")!,
-        UIImage(systemName: "drop.circle")!,
-        UIImage(systemName: "stop.circle")!,
-    ]
-    
-    private static var friendArray: [Friend] = [
-        "권오승",
-        "김민서소영",
-        "김시본",
-        "깡견깡견깡견깡견깡견깡견깡견깡견깡견깡견",
-        "린파나요우",
-        "맹돌이",
-        "배현규",
-        "성재혁",
-        "소라",
-        "신승철",
-        "안지섭",
-        "용현석",
-        "유현준",
-        "윤봉준",
-        "이가연",
-        "이건우",
-        "이재봉",
-        "진영",
-        "휘창",
-        "Amy Kim",
-        "ash",
-        "Baek Gayoung",
-        "COKE",
-        "DKDK",
-        "Ejin",
-        "English teacher",
-        "H",
-        "ht",
-        "Jason",
-        "JS",
-        "Maria Alejandra Kwon",
-        "TJ",
-        "Yejin Jo",
-        "YeongJaeKo",
-        "..",
-        "ウジュ",
-        "😱😱😱",
-    ].shuffled().map {
-        Friend(image: FriendList.imageArray.randomElement()!, name: $0)
-    }
+    var friendArray: [Friend] = []
     
     private let hangul = ["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"]
 
@@ -101,7 +114,7 @@ class FriendList {
     }
     
     public var sortedFriendWithKey: [(String, [Friend])] {
-        let dictionary = Dictionary(grouping: FriendList.friendArray) {
+        let dictionary = Dictionary(grouping: self.friendArray) {
             FriendList.shared.groupKey(string: $0.name)
         }
         

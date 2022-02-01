@@ -36,16 +36,38 @@ struct Constants {
         }
     }
     
+    struct CallCell {
+        struct ViewHeight {
+            static let cell: CGFloat = 70
+        }
+        struct ImageHeight {
+            static let profile: CGFloat = 50
+            static let from: CGFloat = 12
+            static let call: CGFloat = 20
+        }
+        struct Padding {
+            static let profileImageLeading: CGFloat = 12
+            static let informationLeading: CGFloat = 12
+            static let profileNameBottom: CGFloat = 5
+            static let callDateLeading: CGFloat = 5
+            static let callImageTrailing: CGFloat = -20
+        }
+    }
+    
     struct ContactCell {
         struct ViewHeight {
             static let section: CGFloat = 22
             static let cell: CGFloat = 60
         }
-        
         struct ImageHeight {
             static let profile: CGFloat = 43
             static let line: CGFloat = 19
             static let call: CGFloat = 18
+        }
+        struct Padding {
+            static let profileImageLeading: CGFloat = 12
+            static let profileNameLeading: CGFloat = 12
+            static let callImageTrailing: CGFloat = -20
         }
     }
     

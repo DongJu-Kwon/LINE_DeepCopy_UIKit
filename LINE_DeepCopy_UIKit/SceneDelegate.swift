@@ -40,6 +40,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             $0.tabBarItem.setTitleTextAttributes([NSAttributedString.Key.font : UIFont.forTabBarItemTitle], for: .normal)
         }
         
+        /*
+         for test
+         */
+        test()
+        
         window = UIWindow(windowScene: windowScene)
         window?.rootViewController = tabbarController
         window?.makeKeyAndVisible()
@@ -73,6 +78,69 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // to restore the scene back to its current state.
     }
 
-
+    func test() {
+        let imageArray = [
+            UIImage(systemName: "flame.circle")!,
+            UIImage(systemName: "person.circle")!,
+            UIImage(systemName: "person.crop.circle")!,
+            UIImage(systemName: "circle.circle")!,
+            UIImage(systemName: "graduationcap.circle")!,
+            UIImage(systemName: "drop.circle")!,
+            UIImage(systemName: "stop.circle")!,
+        ]
+        
+        [
+            "권오승",
+            "김민서소영",
+            "김시본",
+            "깡견",
+            "린파나요우",
+            "맹돌이",
+            "배현규",
+            "성재혁",
+            "소라",
+            "신승철",
+            "안지섭",
+            "용현석",
+            "유현준",
+            "윤봉준",
+            "이가연",
+            "이건우",
+            "이재봉",
+            "진영",
+            "휘창",
+            "Amy Kim",
+            "ash",
+            "Baek Gayoung",
+            "COKE",
+            "DKDK",
+            "Ejin",
+            "English teacher",
+            "H",
+            "ht",
+            "Jason",
+            "JS",
+            "Maria Alejandra Kwon",
+            "TJ",
+            "Yejin Jo",
+            "YeongJaeKo",
+            "..",
+            "ウジュ",
+            "😱😱😱",
+        ].shuffled().map {
+            Friend(image: imageArray.randomElement()!, name: $0)
+        }.forEach {
+            FriendList.shared.friendArray.append($0)
+        }
+        
+        let friend1 = Friend(image: imageArray.randomElement()!, name: "깡견깡견깡견깡견깡견깡견깡견깡견깡견깡견")
+        [
+            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Calendar.current.date(byAdding: .hour, value: -2, to: Date())!, parent: friend1),
+            Friend.CallHistory(type: .voice, from: .sender(.cancelled), date: Date(), parent: friend1),
+            Friend.CallHistory(type: .voice, from: .sender(.cancelled), date: Calendar.current.date(byAdding: .day, value: -1, to: Date())!, parent: friend1),
+        ].forEach {
+            friend1.callHistory.append($0)
+        }
+        FriendList.shared.friendArray.append(friend1)
+    }
 }
-

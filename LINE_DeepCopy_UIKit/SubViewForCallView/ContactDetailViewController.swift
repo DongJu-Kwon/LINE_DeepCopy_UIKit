@@ -10,6 +10,7 @@ import Then
 
 class ContactDetailViewController: UIViewController {
     public var friend: Friend!
+    public var fromCallView: Bool! = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,24 +50,25 @@ class ContactDetailViewController: UIViewController {
         }
         profileSubView.addSubview(friendNameLabel)
         
-        let friendImageView = UIImageView(image: friend.image.forContactDetailProfileImage)
+        let friendImageView = UIImageView(image: friend.image.forContactDetailProfile)
         friendImageView.translatesAutoresizingMaskIntoConstraints = false
         profileSubView.addSubview(friendImageView)
         
         let chatCallButtonView = UIView()
-        let border = CALayer()
-        border.backgroundColor = UIColor.borderGray!.cgColor
-        border.frame = CGRect(x: 0, y: Constants.ContactDetailView.ButtonView.ViewHeight.itself - 0.2, width: view.frame.size.width, height: 0.2)
+        let border = CALayer().then {
+            $0.backgroundColor = UIColor.borderGray!.cgColor
+            $0.frame = CGRect(x: 0, y: Constants.ContactDetailView.ButtonView.ViewHeight.itself - 0.2, width: view.frame.size.width, height: 0.2)
+        }
         chatCallButtonView.layer.addSublayer(border)
         chatCallButtonView.translatesAutoresizingMaskIntoConstraints = false
         profileScrollView.addSubview(chatCallButtonView)
         
         let toChatButton = ChatCallButton(for: .chat)
-        let toCallButton = ChatCallButton(for: .call)
-        let toFacetimeButton = ChatCallButton(for: .facetime)
+        let toVoiceCallButton = ChatCallButton(for: .voice)
+        let toVideoCallButton = ChatCallButton(for: .video)
         chatCallButtonView.addSubview(toChatButton)
-        chatCallButtonView.addSubview(toCallButton)
-        chatCallButtonView.addSubview(toFacetimeButton)
+        chatCallButtonView.addSubview(toVoiceCallButton)
+        chatCallButtonView.addSubview(toVideoCallButton)
         
         profileScrollView.setFullWidth(target: view)
         profileScrollView.setHeight(Constants.ContactDetailView.ScrollView.ViewHeight.itself)
@@ -78,11 +80,11 @@ class ContactDetailViewController: UIViewController {
         chatCallButtonView.setHeight(Constants.ContactDetailView.ButtonView.ViewHeight.itself)
         
         toChatButton.setWidth(view.frame.size.width/3)
-        toCallButton.setWidth(view.frame.size.width/3)
-        toFacetimeButton.setWidth(view.frame.size.width/3)
+        toVoiceCallButton.setWidth(view.frame.size.width/3)
+        toVideoCallButton.setWidth(view.frame.size.width/3)
         toChatButton.setFullHeight(target: chatCallButtonView)
-        toCallButton.setFullHeight(target: chatCallButtonView)
-        toFacetimeButton.setFullHeight(target: chatCallButtonView)
+        toVoiceCallButton.setFullHeight(target: chatCallButtonView)
+        toVideoCallButton.setFullHeight(target: chatCallButtonView)
         
         NSLayoutConstraint.activate([
             profileScrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -102,13 +104,13 @@ class ContactDetailViewController: UIViewController {
             friendImageView.widthAnchor.constraint(equalToConstant: Constants.ContactDetailView.ProfileView.ImageHeight.profile),
             
             toChatButton.centerYAnchor.constraint(equalTo: chatCallButtonView.centerYAnchor),
-            toCallButton.centerYAnchor.constraint(equalTo: chatCallButtonView.centerYAnchor),
-            toFacetimeButton.centerYAnchor.constraint(equalTo: chatCallButtonView.centerYAnchor),
+            toVoiceCallButton.centerYAnchor.constraint(equalTo: chatCallButtonView.centerYAnchor),
+            toVideoCallButton.centerYAnchor.constraint(equalTo: chatCallButtonView.centerYAnchor),
             
             toChatButton.leadingAnchor.constraint(equalTo: chatCallButtonView.leadingAnchor),
-            toCallButton.leadingAnchor.constraint(equalTo: toChatButton.trailingAnchor),
-            toFacetimeButton.leadingAnchor.constraint(equalTo: toCallButton.trailingAnchor),
-            toFacetimeButton.trailingAnchor.constraint(equalTo: chatCallButtonView.trailingAnchor)
+            toVoiceCallButton.leadingAnchor.constraint(equalTo: toChatButton.trailingAnchor),
+            toVideoCallButton.leadingAnchor.constraint(equalTo: toVoiceCallButton.trailingAnchor),
+            toVideoCallButton.trailingAnchor.constraint(equalTo: chatCallButtonView.trailingAnchor)
         ])
         
         /*
@@ -152,8 +154,8 @@ extension ContactDetailViewController: UITableViewDelegate {
 class ChatCallButton: UIButton {
     enum type {
         case chat
-        case call
-        case facetime
+        case voice
+        case video
     }
     
     init(for type: type) {
@@ -166,16 +168,16 @@ class ChatCallButton: UIButton {
         case .chat:
             image = UIImage(systemName: "message.fill")!
             title = "대화"
-        case .call:
+        case .voice:
             image = UIImage(systemName: "phone.fill")!
             title = "음성통화"
-        case .facetime:
+        case .video:
             image = UIImage(systemName: "video.fill")!
             title = "영상통화"
         }
         
         var configuration = UIButton.Configuration.plain()
-        configuration.image = image.forContactDetailButtonImage
+        configuration.image = image.forContactDetailButton
         configuration.attributedTitle = AttributedString(title, attributes: AttributeContainer([
             .font: UIFont.forContactDetailButton,
             .foregroundColor: UIColor.gray

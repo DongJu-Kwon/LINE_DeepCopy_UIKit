@@ -45,7 +45,7 @@ class ContactViewController: UIViewController {
 //        navigationBar.backgroundColor = .green
 //        print(self.navigationBar.frame.height)
         
-        let trailingBarItem = UIBarButtonItemButton(image: UIImage(systemName: "xmark")!.forNavigationBarXmarkImage, defaultHeight: false)
+        let trailingBarItem = UIBarButtonItemButton(image: UIImage(systemName: "xmark")!.forNavigationBarXmark, defaultHeight: false)
         navigationItem.rightBarButtonItem = trailingBarItem
         
         trailingBarItem.button.addTarget(self, action: #selector(dismissView), for: .touchUpInside)
@@ -60,10 +60,10 @@ class ContactViewController: UIViewController {
         
         tableView.delegate = self
         tableView.dataSource = self
-        view.addSubview(tableView)
         tableView.register(ContactTableCell.classForCoder(), forCellReuseIdentifier: "cell")
         tableView.tableFooterView = UIView(frame: .zero)
         tableView.separatorStyle = .none
+        self.view.addSubview(tableView)
         
         tableView.setFullWidth(target: view)
         tableView.topAnchor.constraint(equalTo: textFieldView.bottomAnchor, constant: 15).isActive = true
@@ -101,7 +101,7 @@ extension ContactViewController: UITableViewDelegate {
         return FriendList.shared.sortedFriendWithKey[section].0
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print(indexPath)
+        tableView.deselectRow(at: indexPath, animated: true)
         let contactDetailViewController = ContactDetailViewController()
         contactDetailViewController.friend = FriendList.shared.sortedFriendWithKey[indexPath.section].1[indexPath.row]
         self.navigationController?.pushViewController(contactDetailViewController, animated: true)
@@ -125,12 +125,12 @@ extension ContactViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         return (tableView.dequeueReusableCell(withIdentifier: "cell") as! ContactTableCell).then {
             let friend = FriendList.shared.sortedFriendWithKey[indexPath.section].1[indexPath.row]
-            $0.profileImageView.image = friend.image.forContactProfileImage
+            $0.profileImageView.image = friend.image.forContactCellProfile
             $0.profileNameLabel.text = friend.name
             
             $0.backgroundColor = .background
             $0.selectedBackgroundView = UIView().then {
-                $0.backgroundColor = .background
+                $0.backgroundColor = .selectedGray
             }
         }
     }
@@ -138,18 +138,25 @@ extension ContactViewController: UITableViewDataSource {
 
 class ContactTableCell: UITableViewCell {
     
-    var profileImageView: ContactProfileImageView!
-    var profileNameLabel: ContactProfileNameLabel!
-    let callImageView = UIImageView(image: UIImage(systemName: "phone")!.forContactCallImage).then {
+    let profileImageView = ProfileWithLineImageView()
+    let profileNameLabel = UILabel().then {
+        $0.attributedText = NSAttributedString(string: "", attributes: [.paragraphStyle: NSMutableParagraphStyle().then {
+            $0.alignment = .left
+            $0.lineBreakMode = .byTruncatingTail
+        }])
+        $0.numberOfLines = 1
+        $0.font = .forContactName
+        $0.textColor = .white
+        
+        $0.translatesAutoresizingMaskIntoConstraints = false
+    }
+    let callImageView = UIImageView(image: UIImage(systemName: "phone")!.forContactCellCall).then {
         $0.tintColor = .gray
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
-        profileImageView = ContactProfileImageView()
-        profileNameLabel = ContactProfileNameLabel()
         
         contentView.addSubview(profileImageView)
         contentView.addSubview(profileNameLabel)
@@ -160,55 +167,10 @@ class ContactTableCell: UITableViewCell {
             profileNameLabel.centerYAnchor.constraint(equalTo: safeAreaLayoutGuide.centerYAnchor),
             callImageView.centerYAnchor.constraint(equalTo: safeAreaLayoutGuide.centerYAnchor),
             
-            profileImageView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 12),
-            profileNameLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: 12),
-            callImageView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            profileImageView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: Constants.ContactCell.Padding.profileImageLeading),
+            profileNameLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: Constants.ContactCell.Padding.profileNameLeading),
+            callImageView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: Constants.ContactCell.Padding.callImageTrailing),
         ])
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
-
-class ContactProfileImageView: UIImageView {
-    let lineImageView = UIImageView(image: UIImage(systemName: "message.fill")!.forContactLineImage).then {
-        $0.tintColor = .green
-        $0.translatesAutoresizingMaskIntoConstraints = false
-    }
-    
-    init() {
-        super.init(frame: .zero)
-        
-        addSubview(lineImageView)
-        NSLayoutConstraint.activate([
-            lineImageView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
-            lineImageView.trailingAnchor.constraint(equalTo: self.trailingAnchor)
-        ])
-        
-        self.translatesAutoresizingMaskIntoConstraints = false
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
-
-class ContactProfileNameLabel: UILabel {
-    init() {
-        super.init(frame: .zero)
-        
-        let paragraphStyle = NSMutableParagraphStyle().then {
-            $0.alignment = .left
-            $0.lineBreakMode = .byTruncatingTail
-        }
-        
-        self.attributedText = NSAttributedString(string: "", attributes: [.paragraphStyle: paragraphStyle])
-        self.numberOfLines = 1
-        self.font = .forContactName
-        self.textColor = .white
-        
-        self.translatesAutoresizingMaskIntoConstraints = false
     }
     
     required init?(coder: NSCoder) {
