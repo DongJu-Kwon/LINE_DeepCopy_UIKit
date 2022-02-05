@@ -50,11 +50,11 @@ struct Constants {
             static let informationLeading: CGFloat = 12
             static let profileNameBottom: CGFloat = 5
             static let callDateLeading: CGFloat = 5
-            static let callImageTrailing: CGFloat = -20
+            static let callButtonTrailing: CGFloat = -20
         }
     }
     
-    struct ContactCell {
+    struct ContactView {
         struct ViewHeight {
             static let section: CGFloat = 22
             static let cell: CGFloat = 60
@@ -65,9 +65,10 @@ struct Constants {
             static let call: CGFloat = 18
         }
         struct Padding {
+            static let sectionLeading: CGFloat = 14
             static let profileImageLeading: CGFloat = 12
             static let profileNameLeading: CGFloat = 12
-            static let callImageTrailing: CGFloat = -20
+            static let callButtonTrailing: CGFloat = -20
         }
     }
     
@@ -98,11 +99,32 @@ struct Constants {
             struct ViewHeight {
                 static let itself: CGFloat = 95
             }
+            struct ImageHeight {
+                static let itself: CGFloat = 23
+            }
             struct Padding {
                 static let itself: CGFloat = 7
             }
+        }
+        struct TableView {
+            struct ViewHeight {
+                static let section: CGFloat = 60
+                static let cell: CGFloat = 35
+            }
+            struct ViewWidth {
+                static let timeText: CGFloat = 40
+                static let callTypeText: CGFloat = 60
+            }
             struct ImageHeight {
-                static let itself: CGFloat = 23
+                static let from: CGFloat = 9
+            }
+            struct Padding {
+                static let sectionLeading: CGFloat = 30
+                static let sectionBottom: CGFloat = -5
+                static let callFromImageLeading: CGFloat = 33
+                static let timeTextLeading: CGFloat = 14
+                static let callTypeTextLeading: CGFloat = 5
+                static let fromTypeTextTrailing: CGFloat = -30
             }
         }
     }

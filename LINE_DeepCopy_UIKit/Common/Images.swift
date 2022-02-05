@@ -51,15 +51,15 @@ extension UIImage {
     }
     
     var forContactCellProfile: UIImage {
-        self.resizedToSquare(number: Constants.ContactCell.ImageHeight.profile)
+        self.resizedToSquare(number: Constants.ContactView.ImageHeight.profile)
     }
     
     var forContactCellLine: UIImage {
-        self.resizedToSquare(number: Constants.ContactCell.ImageHeight.line)
+        self.resizedToSquare(number: Constants.ContactView.ImageHeight.line)
     }
     
     var forContactCellCall: UIImage {
-        self.resizedToSquare(number: Constants.ContactCell.ImageHeight.call)
+        self.resizedToSquare(number: Constants.ContactView.ImageHeight.call)
     }
     
     var forContactDetailProfile: UIImage {
@@ -68,5 +68,9 @@ extension UIImage {
     
     var forContactDetailButton: UIImage {
         self.resizedToSquare(number: Constants.ContactDetailView.ButtonView.ImageHeight.itself)
+    }
+    
+    var forContactDetailFrom: UIImage {
+        self.resizedToSquare(number: Constants.ContactDetailView.TableView.ImageHeight.from)
     }
 }

@@ -5,13 +5,66 @@
 //  Created by 권동주 on 2022/01/18.
 //
 
-import Foundation
 import UIKit
 import Then
 
 extension String {
     var forPrefixCallCellName: String {
         self.count > 18 ? "\(self.prefix(18))⋯" : self
+    }
+}
+
+extension Date {
+    func formatting(with: String) -> String {
+        DateFormatter().then {
+            $0.dateFormat = with
+            $0.timeZone = TimeZone.autoupdatingCurrent
+            $0.locale = Locale.current
+        }.string(from: self)
+    }
+    var toKST: String {
+        self.formatting(with: "yyyy-MM-dd HH:mm:ss")
+    }
+    var dropAfterDaysWithKST: String {
+        self.formatting(with: "yyyy/MM/dd")
+    }
+    var filterBeforeHoursWithKST: String {
+        self.formatting(with: "HH:mm")
+    }
+    static func secondsToHours(seconds: Int) -> String {
+        var returnValue = ""
+        
+        if seconds >= 60*60 {
+            returnValue += "\(seconds/60/60):\(seconds/60%60 < 10 ? "0" : "")"
+        }
+        returnValue += "\(seconds/60%60):"
+        returnValue += "\(seconds%60 < 10 ? "0" : "")\(seconds%60)"
+        
+        return returnValue
+    }
+    
+    var startOfDay: Date {
+        Calendar.current.startOfDay(for: self)
+    }
+    
+    var nextDay: Date {
+        Calendar.current.date(byAdding: .day, value: 1, to: self)!
+    }
+    
+    var previousDay: Date {
+        Calendar.current.date(byAdding: .day, value: -1, to: self)!
+    }
+    
+    var lastMonday: Date {
+        Calendar.current.date(from: Calendar.current.dateComponents([.weekOfYear, .yearForWeekOfYear], from: self))!.nextDay
+    }
+    
+    var startOfMonth: Date {
+        Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: self.startOfDay))!
+    }
+    
+    var startOfYear: Date {
+        Calendar.current.date(from: Calendar.current.dateComponents([.year], from: self.startOfDay))!
     }
 }
 

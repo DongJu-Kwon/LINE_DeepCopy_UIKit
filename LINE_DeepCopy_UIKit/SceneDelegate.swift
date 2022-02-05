@@ -135,12 +135,25 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let friend1 = Friend(image: imageArray.randomElement()!, name: "깡견깡견깡견깡견깡견깡견깡견깡견깡견깡견")
         [
-            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Calendar.current.date(byAdding: .hour, value: -2, to: Date())!, parent: friend1),
+            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Date().startOfDay, parent: friend1),
             Friend.CallHistory(type: .voice, from: .sender(.cancelled), date: Date(), parent: friend1),
-            Friend.CallHistory(type: .voice, from: .sender(.cancelled), date: Calendar.current.date(byAdding: .day, value: -1, to: Date())!, parent: friend1),
+            Friend.CallHistory(type: .voice, from: .sender(.cancelled), date: Calendar.current.date(byAdding: .hour, value: 3, to: Date())!, parent: friend1),
+            Friend.CallHistory(type: .voice, from: .sender(.cancelled), date: Date().previousDay, parent: friend1),
+            Friend.CallHistory(type: .video, from: .sender(.called(5)), date: Calendar.current.date(byAdding: .hour, value: 5, to: Date())!, parent: friend1),
         ].forEach {
             friend1.callHistory.append($0)
         }
         FriendList.shared.friendArray.append(friend1)
+        
+        let friend2 = Friend(image: imageArray.randomElement()!, name: "깡견동주깡견동주깡견동주깡견동주깡견동주")
+        [
+            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Date().startOfDay, parent: friend2),
+            Friend.CallHistory(type: .voice, from: .sender(.cancelled), date: Date(), parent: friend2),
+            Friend.CallHistory(type: .voice, from: .sender(.cancelled), date: Calendar.current.date(byAdding: .hour, value: 2, to: Date())!, parent: friend2),
+            Friend.CallHistory(type: .voice, from: .sender(.cancelled), date: Date().previousDay, parent: friend2),
+        ].forEach {
+            friend2.callHistory.append($0)
+        }
+        FriendList.shared.friendArray.append(friend2)
     }
 }

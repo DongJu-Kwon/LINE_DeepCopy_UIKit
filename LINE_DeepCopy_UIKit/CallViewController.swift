@@ -26,6 +26,12 @@ class CallViewController: UIViewController {
         let trailingBarItem = UIBarButtonItemButton(image: UIImage(systemName: "person.circle")!)
         trailingBarItem.button.addTarget(self, action: #selector(presentContactView), for: .touchUpInside)
         navigationItem.rightBarButtonItem = trailingBarItem
+        
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.register(CallTableCell.self, forCellReuseIdentifier: "cell")
+        tableView.separatorStyle = .none
+        tableView.backgroundColor = .background
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -74,7 +80,7 @@ class CallViewController: UIViewController {
                 $0.setHorizontalMargin(target: self.view, 48)
             }
             
-            let informTitleLabel = InformTitleLabel("지금 LINE 음성통화를 사용해 보세요.").then {
+            let _/*informTitleLabel*/ = InformTitleLabel("지금 LINE 음성통화를 사용해 보세요.").then {
                 self.view.addSubview($0)
                 $0.setBottomMargin(target: informContentLabel, 5)
                 $0.setHorizontalMargin(target: self.view, 0)
@@ -82,15 +88,10 @@ class CallViewController: UIViewController {
             
             informButton.addTarget(self, action: #selector(presentContactView), for: .touchUpInside)
         } else {
-            tableView.delegate = self
-            tableView.dataSource = self
-            tableView.register(CallTableCell.classForCoder(), forCellReuseIdentifier: "cell")
-            tableView.separatorStyle = .none
             self.view.addSubview(tableView)
             
             tableView.setFullWidth(target: self.view)
             tableView.setFullHeight(target: self.view)
-            tableView.backgroundColor = .background
         }
     }
 }
@@ -99,7 +100,7 @@ extension CallViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let contactDetailViewController = ContactDetailViewController().then {
-            $0.friend = friendsWhoHaveCallHistory[indexPath.row]
+            $0.setFriend(with: friendsWhoHaveCallHistory[indexPath.row])
             $0.fromCallView = true
         }
         self.navigationController?.pushViewController(contactDetailViewController, animated: true)
@@ -127,7 +128,7 @@ extension CallViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         return (tableView.dequeueReusableCell(withIdentifier: "cell") as! CallTableCell).then {
             let friend = friendsWhoHaveCallHistory[indexPath.row]
-            $0.setWithFriendInformation(friend: friend)
+            $0.setInformation(with: friend)
             
             $0.backgroundColor = .background
             $0.selectedBackgroundView = UIView().then {
@@ -174,10 +175,10 @@ private class InformButton: UIButton {
         
         self.layer.cornerRadius = 5.0
         self.layer.borderWidth = 1.3
-        self.layer.borderColor = UIColor.borderGray!.cgColor
+        self.layer.borderColor = UIColor.borderGray.cgColor
         
         self.backgroundColor = .background
-        self.setBackgroundColor(color: .selectedGray!, forState: .highlighted)
+        self.setBackgroundColor(color: .selectedGray, forState: .highlighted)
         
         self.translatesAutoresizingMaskIntoConstraints = false
     }
@@ -226,10 +227,13 @@ class CallTableCell: UITableViewCell {
         $0.font = .forCallCellDate
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
-    let callImageView = UIImageView().then {
+    let callButton = UIButton().then {
         $0.tintColor = .gray
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
+    
+    let voiceButtonImage = UIImage(systemName: "phone")!.forCallCellCall
+    let videoButtonImage = UIImage(systemName: "video")!.forCallCellCall
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -239,16 +243,16 @@ class CallTableCell: UITableViewCell {
         informationView.addSubview(profileNameLabel)
         informationView.addSubview(callFromImageView)
         informationView.addSubview(callDateLabel)
-        contentView.addSubview(callImageView)
+        contentView.addSubview(callButton)
         
         NSLayoutConstraint.activate([
             profileImageView.centerYAnchor.constraint(equalTo: safeAreaLayoutGuide.centerYAnchor),
             informationView.centerYAnchor.constraint(equalTo: safeAreaLayoutGuide.centerYAnchor),
-            callImageView.centerYAnchor.constraint(equalTo: safeAreaLayoutGuide.centerYAnchor),
+            callButton.centerYAnchor.constraint(equalTo: safeAreaLayoutGuide.centerYAnchor),
             
             profileImageView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: Constants.CallCell.Padding.profileImageLeading),
             informationView.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: Constants.CallCell.Padding.informationLeading),
-            callImageView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: Constants.CallCell.Padding.callImageTrailing),
+            callButton.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: Constants.CallCell.Padding.callButtonTrailing),
             
             profileNameLabel.topAnchor.constraint(equalTo: informationView.topAnchor),
             profileNameLabel.widthAnchor.constraint(equalTo: informationView.widthAnchor),
@@ -276,21 +280,29 @@ class CallTableCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setWithFriendInformation(friend: Friend) {
-        profileImageView.image = friend.image.forCallCellProfile
-        profileNameLabel.text = friend.callHistory.count > 1 ? "\(friend.name.forPrefixCallCellName) (\(friend.callHistory.count))" : friend.name
-        switch friend.lastCallHistroy!.fromType {
+    func setInformation(with: Friend) {
+        let lastCallHistory = with.lastCallHistroy!
+        
+        profileImageView.image = with.image.forCallCellProfile
+        profileNameLabel.text = with.callHistory.count > 1 ? "\(with.name.forPrefixCallCellName) (\(with.callHistory.count))" : with.name
+        switch lastCallHistory.fromType {
         case .sender(_):
             callFromImageView.image = UIImage(systemName: "arrow.up.right")!.forCallCellFrom
         case .receiver(_):
             callFromImageView.image = UIImage(systemName: "arrow.down.backward")!.forCallCellFrom
         }
-        callDateLabel.text = "\(friend.lastCallHistroy!.date)"
-        switch friend.lastCallHistroy!.callType {
+        callDateLabel.text = "\(with.lastCallHistroy!.date.toKST)"
+        switch lastCallHistory.callType {
         case .voice:
-            callImageView.image = UIImage(systemName: "phone")!.forCallCellCall
+            callButton.setImage(voiceButtonImage, for: .normal)
+            callButton.setImage(voiceButtonImage, for: .highlighted)
         case .video:
-            callImageView.image = UIImage(systemName: "video")!.forCallCellCall
+            callButton.setImage(videoButtonImage, for: .normal)
+            callButton.setImage(videoButtonImage, for: .highlighted)
         }
+        
+//        callButton.addAction(UIAction { _ in
+//            friend.callHistory.insert(.init(type: lastCallHistory.callType, from: .sender(.cancelled), date: Date(), parent: friend), at: 0)
+//        }, for: .touchUpInside)
     }
 }

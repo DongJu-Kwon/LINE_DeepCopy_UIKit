@@ -12,8 +12,8 @@ class ContactViewController: UIViewController {
     
     let textFieldView = CustomTextFieldView(forContactView: true)
     let tableView = UITableView(frame: .zero, style: .grouped).then {
+        $0.backgroundColor = .background
         $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.sectionFooterHeight = 0
     }
     
     override func viewDidLoad() {
@@ -60,9 +60,8 @@ class ContactViewController: UIViewController {
         
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.register(ContactTableCell.classForCoder(), forCellReuseIdentifier: "cell")
-        tableView.tableFooterView = UIView(frame: .zero)
-        tableView.separatorStyle = .none
+        tableView.register(UITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: "header")
+        tableView.register(ContactTableCell.self, forCellReuseIdentifier: "cell")
         self.view.addSubview(tableView)
         
         tableView.setFullWidth(target: view)
@@ -97,25 +96,33 @@ extension ContactViewController: UITableViewDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {
         return FriendList.shared.sortedFriendWithKey.count
     }
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return FriendList.shared.sortedFriendWithKey[section].0
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return Constants.ContactView.ViewHeight.section
+    }
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        return UITableViewHeaderFooterView().then {
+            let label = UILabel().then {
+                $0.text = FriendList.shared.sortedFriendWithKey[section].0
+                $0.textColor = .white
+                $0.font = .forContactTableSection
+                $0.translatesAutoresizingMaskIntoConstraints = false
+            }
+            $0.addSubview(label)
+            NSLayoutConstraint.activate([
+                label.centerYAnchor.constraint(equalTo: $0.centerYAnchor),
+                label.leadingAnchor.constraint(equalTo: $0.leadingAnchor, constant: Constants.ContactView.Padding.sectionLeading),
+            ])
+        }
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let contactDetailViewController = ContactDetailViewController()
-        contactDetailViewController.friend = FriendList.shared.sortedFriendWithKey[indexPath.section].1[indexPath.row]
+        let contactDetailViewController = ContactDetailViewController().then {
+            $0.setFriend(with: FriendList.shared.sortedFriendWithKey[indexPath.section].1[indexPath.row])
+        }
         self.navigationController?.pushViewController(contactDetailViewController, animated: true)
     }
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return UIView().then {
-            $0.backgroundColor = .background
-        }
-    }
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return Constants.ContactCell.ViewHeight.section
-    }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return Constants.ContactCell.ViewHeight.cell
+        return Constants.ContactView.ViewHeight.cell
     }
 }
 extension ContactViewController: UITableViewDataSource {
@@ -137,7 +144,6 @@ extension ContactViewController: UITableViewDataSource {
 }
 
 class ContactTableCell: UITableViewCell {
-    
     let profileImageView = ProfileWithLineImageView()
     let profileNameLabel = UILabel().then {
         $0.attributedText = NSAttributedString(string: "", attributes: [.paragraphStyle: NSMutableParagraphStyle().then {
@@ -145,12 +151,19 @@ class ContactTableCell: UITableViewCell {
             $0.lineBreakMode = .byTruncatingTail
         }])
         $0.numberOfLines = 1
-        $0.font = .forContactName
+        $0.font = .forContactTableCellName
         $0.textColor = .white
         
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
-    let callImageView = UIImageView(image: UIImage(systemName: "phone")!.forContactCellCall).then {
+//    let callImageView = UIImageView().then {
+//        $0.tintColor = .gray
+//        $0.translatesAutoresizingMaskIntoConstraints = false
+//    }
+    let callButton = UIButton().then {
+        let callButtonImage = UIImage(systemName: "phone")!.forContactCellCall
+        $0.setImage(callButtonImage, for: .normal)
+        $0.setImage(callButtonImage, for: .highlighted)
         $0.tintColor = .gray
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
@@ -160,16 +173,16 @@ class ContactTableCell: UITableViewCell {
         
         contentView.addSubview(profileImageView)
         contentView.addSubview(profileNameLabel)
-        contentView.addSubview(callImageView)
+        contentView.addSubview(callButton)
         
         NSLayoutConstraint.activate([
             profileImageView.centerYAnchor.constraint(equalTo: safeAreaLayoutGuide.centerYAnchor),
             profileNameLabel.centerYAnchor.constraint(equalTo: safeAreaLayoutGuide.centerYAnchor),
-            callImageView.centerYAnchor.constraint(equalTo: safeAreaLayoutGuide.centerYAnchor),
+            callButton.centerYAnchor.constraint(equalTo: safeAreaLayoutGuide.centerYAnchor),
             
-            profileImageView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: Constants.ContactCell.Padding.profileImageLeading),
-            profileNameLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: Constants.ContactCell.Padding.profileNameLeading),
-            callImageView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: Constants.ContactCell.Padding.callImageTrailing),
+            profileImageView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: Constants.ContactView.Padding.profileImageLeading),
+            profileNameLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: Constants.ContactView.Padding.profileNameLeading),
+            callButton.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: Constants.ContactView.Padding.callButtonTrailing),
         ])
     }
     

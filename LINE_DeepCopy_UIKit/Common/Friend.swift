@@ -5,7 +5,6 @@
 //  Created by 권동주 on 2022/01/20.
 //
 
-import Foundation
 import UIKit
 
 class Friend {
@@ -28,10 +27,10 @@ class Friend {
             case video
         }
         
-        var callType: CallType
         var fromType: FromType
+        var callType: CallType
         var date: Date
-        weak var parent: Friend!
+        unowned var parent: Friend
         
         init(type: CallType, from: FromType, date: Date, parent: Friend) {
             self.callType = type
@@ -51,13 +50,84 @@ class Friend {
     }
     
     var sortedCallHistory: [CallHistory] {
-        self.callHistory.sorted {
-            $0.date > $1.date
-        }
+        self.callHistory.sorted()
     }
     
     var lastCallHistroy: CallHistory? {
         self.sortedCallHistory.first
+    }
+    
+    enum PastDateGroupKey: String {
+        case today = "오늘"
+        case yesterday = "어제"
+        case beforeYesterday = "그제"
+        case thisWeek = "이번 주"
+        case lastWeek = "저번 주"
+        case thisMonth = "이번 달"
+        case lastMonth = "저번 달"
+        case thisYear = "올해"
+        case lastYear = "작년"
+        case past = "오래 전"
+        
+        var orderValue: Int {
+            [
+                .today,
+                .yesterday,
+                .beforeYesterday,
+                .thisWeek,
+                .lastWeek,
+                .thisMonth,
+                .lastMonth,
+                .thisYear,
+                .lastYear,
+                .past
+            ].firstIndex(of: self)!
+        }
+    }
+    
+    private func groupKeyWithDate(history: CallHistory) -> PastDateGroupKey {
+        let startOfToday = Date().startOfDay
+        
+        switch history.date {
+        case startOfToday...:
+            return .today
+        case startOfToday.previousDay...:
+            return .yesterday
+        case startOfToday.previousDay.previousDay...:
+            return .beforeYesterday
+        case startOfToday.lastMonday...:
+            return .thisWeek
+        case startOfToday.lastMonday.previousDay.lastMonday...:
+            return .lastWeek
+        case startOfToday.startOfMonth:
+            return .thisMonth
+        case startOfToday.startOfMonth.previousDay.startOfMonth:
+            return .lastMonth
+        case startOfToday.startOfYear:
+            return .thisYear
+        case startOfToday.startOfYear.previousDay.startOfYear:
+            return .lastYear
+        default:
+            return .past
+        }
+    }
+    
+    var sortedCallHistoryWithKey: [(Date, [CallHistory])] {
+//        let dictionary = Dictionary(grouping: self.callHistory) {
+//            self.groupKeyWithDate(history: $0)
+//        }
+//
+//        return Array(dictionary.keys).sorted {
+//            $0.orderValue < $1.orderValue
+//        }.map {
+//            ($0, dictionary[$0]!.sorted())
+//        }
+        let dictionary = Dictionary(grouping: self.callHistory) {
+            $0.date.startOfDay
+        }
+        return Array(dictionary.keys).sorted().reversed().map {
+            ($0, dictionary[$0]!.sorted())
+        }
     }
 }
 
@@ -71,9 +141,13 @@ extension Friend: Equatable, Hashable {
     }
 }
 
-extension Friend.CallHistory: Equatable, Hashable {
+extension Friend.CallHistory: Equatable, Hashable, Comparable {
     static func == (lhs: Friend.CallHistory, rhs: Friend.CallHistory) -> Bool {
         return lhs.date == rhs.date
+    }
+    
+    static func < (lhs: Friend.CallHistory, rhs: Friend.CallHistory) -> Bool {
+        return lhs.date > rhs.date
     }
     
     func hash(into hasher: inout Hasher) {

@@ -46,7 +46,11 @@ extension UIFont {
         UIFont.systemFont(ofSize: 10.5, weight: .regular)
     }
     
-    static var forContactName: UIFont {
+    static var forContactTableSection: UIFont {
+        UIFont.systemFont(ofSize: 13, weight: .bold)
+    }
+    
+    static var forContactTableCellName: UIFont {
         UIFont.systemFont(ofSize: 12, weight: .light)
     }
     
@@ -56,5 +60,13 @@ extension UIFont {
     
     static var forContactDetailButton: UIFont {
         UIFont.systemFont(ofSize: 10, weight: .regular)
+    }
+    
+    static var forContactDetailTableSection: UIFont {
+        UIFont.systemFont(ofSize: 13, weight: .bold)
+    }
+    
+    static var forContactDetailTableCell: UIFont {
+        UIFont.systemFont(ofSize: 13, weight: .light)
     }
 }
