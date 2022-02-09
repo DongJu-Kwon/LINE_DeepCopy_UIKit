@@ -12,34 +12,36 @@ fileprivate unowned var friend: Friend!
 
 class ContactDetailViewController: UIViewController {
     public var fromCallView: Bool! = false
-    let tableView = UITableView(frame: .zero, style: .grouped).then {
+    
+    let navigationTitleLabel = UILabel()
+    let historyTableView = UITableView(frame: .zero, style: .grouped).then {
         $0.backgroundColor = .background
         $0.allowsSelection = false
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
+    let profileView = UIView().then {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+    }
+    var profileViewTopAnchor: NSLayoutConstraint!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.navigationItem.titleView = self.navigationTitleLabel
         self.view.backgroundColor = .background
-        self.title = friend.name
         
-        let profileScrollView = UIView()
-        profileScrollView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(profileScrollView)
+        self.view.addSubview(profileView)
+        profileView.setFullWidth(target: self.view)
+        profileView.setHeight(Constants.ContactDetailView.ProfileView.ViewHeight.itself)
+        profileViewTopAnchor = profileView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).then {
+            $0.isActive = true
+        }
         
-//        let historyTableView = UITableView()
-//        historyTableView.translatesAutoresizingMaskIntoConstraints = false
-//        self.view.addSubview(historyTableView)
-        
-        let profileView = UIView()
-        profileView.translatesAutoresizingMaskIntoConstraints = false
-        profileScrollView.addSubview(profileView)
-        
-        let profileSubView = UIView()
-        profileSubView.translatesAutoresizingMaskIntoConstraints = false
-        profileView.addSubview(profileSubView)
-        profileSubView.setHorizontalMargin(target: profileView, Constants.ContactDetailView.ScrollView.Padding.horizontal)
+        let profileSubView = UIView().then {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            profileView.addSubview($0)
+            $0.setHorizontalMargin(target: profileView, Constants.ContactDetailView.ProfileView.Padding.horizontal)
+        }
         
         let friendNameLabel = UILabel().then {
             $0.attributedText = NSAttributedString(string: friend.name, attributes: [
@@ -53,21 +55,22 @@ class ContactDetailViewController: UIViewController {
             $0.font = UIFont.forContactDetailProfileFriendName
             $0.textColor = .white
             $0.translatesAutoresizingMaskIntoConstraints = false
+            profileSubView.addSubview($0)
         }
-        profileSubView.addSubview(friendNameLabel)
         
-        let friendImageView = UIImageView(image: friend.image.forContactDetailProfile)
-        friendImageView.translatesAutoresizingMaskIntoConstraints = false
-        profileSubView.addSubview(friendImageView)
-        
-        let chatCallButtonView = UIView()
-        let border = CALayer().then {
-            $0.backgroundColor = UIColor.borderGray.cgColor
-            $0.frame = CGRect(x: 0, y: Constants.ContactDetailView.ButtonView.ViewHeight.itself - 0.2, width: view.frame.size.width, height: 0.2)
+        let friendImageView = UIImageView(image: friend.image.forContactDetailProfile).then {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            profileSubView.addSubview($0)
         }
-        chatCallButtonView.layer.addSublayer(border)
-        chatCallButtonView.translatesAutoresizingMaskIntoConstraints = false
-        profileScrollView.addSubview(chatCallButtonView)
+        
+        let chatCallButtonView = UIView().then {
+            $0.layer.addSublayer(CALayer().then {
+                $0.backgroundColor = UIColor.borderGray.cgColor
+                $0.frame = CGRect(x: 0, y: Constants.ContactDetailView.ButtonView.ViewHeight.itself - 0.2, width: view.frame.size.width, height: 0.2)
+            })
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            self.view.addSubview($0)
+        }
         
         let toChatButton = ChatCallButton(for: .chat)
         let toVoiceCallButton = ChatCallButton(for: .voice)
@@ -75,12 +78,6 @@ class ContactDetailViewController: UIViewController {
         chatCallButtonView.addSubview(toChatButton)
         chatCallButtonView.addSubview(toVoiceCallButton)
         chatCallButtonView.addSubview(toVideoCallButton)
-        
-        profileScrollView.setFullWidth(target: view)
-        profileScrollView.setHeight(Constants.ContactDetailView.ScrollView.ViewHeight.itself)
-        
-        profileView.setFullWidth(target: profileScrollView)
-        profileView.setHeight(Constants.ContactDetailView.ProfileView.ViewHeight.itself)
 
         chatCallButtonView.setFullWidth(target: profileView)
         chatCallButtonView.setHeight(Constants.ContactDetailView.ButtonView.ViewHeight.itself)
@@ -93,13 +90,10 @@ class ContactDetailViewController: UIViewController {
         toVideoCallButton.setFullHeight(target: chatCallButtonView)
         
         NSLayoutConstraint.activate([
-            profileScrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            profileView.topAnchor.constraint(equalTo: profileScrollView.topAnchor),
             chatCallButtonView.topAnchor.constraint(equalTo: profileView.bottomAnchor),
-//            chatCallButtonView.topAnchor.constraint(equalTo: profileScrollView.topAnchor),
             
             profileSubView.topAnchor.constraint(equalTo: profileView.topAnchor),
-            profileSubView.heightAnchor.constraint(equalToConstant: Constants.ContactDetailView.ProfileView.Padding.topAnchor*2 + Constants.ContactDetailView.ProfileView.ImageHeight.profile),
+            profileSubView.heightAnchor.constraint(equalToConstant: Constants.ContactDetailView.ProfileView.ViewHeight.subView),
             
             friendNameLabel.centerYAnchor.constraint(equalTo: profileSubView.centerYAnchor),
             friendImageView.centerYAnchor.constraint(equalTo: profileSubView.centerYAnchor),
@@ -120,20 +114,20 @@ class ContactDetailViewController: UIViewController {
         ])
         
         if self.fromCallView {
-            tableView.delegate = self
-            tableView.dataSource = self
-            tableView.register(UITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: "header")
-            tableView.register(ContactDetailTableCell.self, forCellReuseIdentifier: "cell")
-            tableView.tableFooterView = UIView(frame: .zero)
-            tableView.sectionFooterHeight = 0
-            tableView.separatorStyle = .none
+            historyTableView.delegate = self
+            historyTableView.dataSource = self
+            historyTableView.register(UITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: "header")
+            historyTableView.register(ContactDetailTableCell.self, forCellReuseIdentifier: "cell")
+            historyTableView.tableFooterView = UIView(frame: .zero)
+            historyTableView.sectionFooterHeight = 0
+            historyTableView.separatorStyle = .none
                 
-            self.view.addSubview(tableView)
-            tableView.setFullWidth(target: self.view)
+            self.view.addSubview(historyTableView)
+            historyTableView.setFullWidth(target: self.view)
                 
             NSLayoutConstraint.activate([
-                tableView.topAnchor.constraint(equalTo: profileScrollView.bottomAnchor),
-                tableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+                historyTableView.topAnchor.constraint(equalTo: chatCallButtonView.bottomAnchor),
+                historyTableView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor)
             ])
         }
         
@@ -141,7 +135,6 @@ class ContactDetailViewController: UIViewController {
          for debug
          */
         
-//        profileScrollView.backgroundColor = .red
 //        profileView.backgroundColor = .green
 //        profileSubView.backgroundColor = .purple
 //        friendNameLabel.backgroundColor = .orange
@@ -155,10 +148,10 @@ class ContactDetailViewController: UIViewController {
     
     func setFriend(with: Friend) {
         friend = with
-    }
-    
-    func flashScrollbar() {
-        self.tableView.flashScrollIndicators()
+        self.navigationTitleLabel.attributedText = NSAttributedString(string: friend.name, attributes: [
+            .foregroundColor: UIColor.white.withAlphaComponent(0),
+            .font: UIFont.forContactDetailNavigationTitle
+        ])
     }
     
     @objc func dismissView() {
@@ -192,11 +185,43 @@ extension ContactDetailViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return Constants.ContactDetailView.TableView.ViewHeight.cell
     }
-//    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-//        scrollView.indicatorStyle = .default
-//        self.flashScrollbar()
-//        print(scrollView.frame)
-//    }
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        scrollView.indicatorStyle = .white
+        print("scroll will begin dragging\t\(scrollView.contentOffset.y)")
+    }
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        print("scroll did end dragging\t\t\(scrollView.contentOffset.y)\t\tDecelerate: \(decelerate)")
+        
+        if !decelerate {
+            switch scrollView.contentOffset.y {
+            case ...Constants.ContactDetailView.ProfileView.ViewHeight.subView:
+                historyTableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: true)
+            case ...Constants.ContactDetailView.ProfileView.ViewHeight.itself:
+                historyTableView.setContentOffset(CGPoint(x: 0, y: Constants.ContactDetailView.ProfileView.ViewHeight.itself), animated: true)
+                break
+            default:
+                break
+            }
+        }
+    }
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let scrollPosition = scrollView.contentOffset.y
+        
+        self.navigationTitleLabel.attributedText = NSAttributedString(string: self.navigationTitleLabel.text!, attributes: [
+            .foregroundColor: UIColor.white.withAlphaComponent(min(max(0, scrollPosition/Constants.ContactDetailView.ProfileView.Padding.alphaBottom), 1)),
+            .font: UIFont.forContactDetailNavigationTitle
+        ])
+        
+        switch scrollPosition {
+        case ...0:
+            self.profileViewTopAnchor.constant = 0
+        case ...Constants.ContactDetailView.ProfileView.ViewHeight.itself:
+//            self.profileViewTopAnchor.constant = -scrollPosition
+            return
+        default:
+            return
+        }
+    }
 }
 extension ContactDetailViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -235,17 +260,17 @@ class ChatCallButton: UIButton {
             title = "영상통화"
         }
         
-        var configuration = UIButton.Configuration.plain()
-        configuration.image = image.forContactDetailButton
-        configuration.attributedTitle = AttributedString(title, attributes: AttributeContainer([
-            .font: UIFont.forContactDetailButton,
-            .foregroundColor: UIColor.gray
-        ]))
-        configuration.imagePlacement = .top
-        configuration.imagePadding = Constants.ContactDetailView.ButtonView.Padding.itself
-        
-        self.configuration = configuration
-        
+        self.configuration = {
+            var configuration = UIButton.Configuration.plain()
+            configuration.image = image.forContactDetailButton
+            configuration.attributedTitle = AttributedString(title, attributes: AttributeContainer([
+                .foregroundColor: UIColor.gray,
+                .font: UIFont.forContactDetailButton,
+            ]))
+            configuration.imagePlacement = .top
+            configuration.imagePadding = Constants.ContactDetailView.ButtonView.Padding.itself
+            return configuration
+        }()
         self.translatesAutoresizingMaskIntoConstraints = false
     }
     
@@ -262,7 +287,6 @@ class ContactDetailTableCell: UITableViewCell {
     let timeTextLabel = UILabel().then {
         $0.textColor = .white
         $0.font = UIFont.forContactDetailTableCell
-        $0.textAlignment = .center
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
     let callTypeTextLabel = UILabel().then {
@@ -292,9 +316,7 @@ class ContactDetailTableCell: UITableViewCell {
             
             callFromImageView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: Constants.ContactDetailView.TableView.Padding.callFromImageLeading),
             timeTextLabel.leadingAnchor.constraint(equalTo: callFromImageView.trailingAnchor, constant: Constants.ContactDetailView.TableView.Padding.timeTextLeading),
-            timeTextLabel.widthAnchor.constraint(equalToConstant: Constants.ContactDetailView.TableView.ViewWidth.timeText),
             callTypeTextLabel.leadingAnchor.constraint(equalTo: timeTextLabel.trailingAnchor, constant: Constants.ContactDetailView.TableView.Padding.callTypeTextLeading),
-            callTypeTextLabel.widthAnchor.constraint(equalToConstant: Constants.ContactDetailView.TableView.ViewWidth.callTypeText),
             fromTypeTextLabel.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: Constants.ContactDetailView.TableView.Padding.fromTypeTextTrailing)
         ])
     }
@@ -316,7 +338,8 @@ class ContactDetailTableCell: UITableViewCell {
         case .sender(.cancelled):
             fromTypeTextLabel.text = "취소된 통화"
         case .receiver(.missed):
-            fromTypeTextLabel.text = "부재중"
+            fromTypeTextLabel.text = "부재중 전화"
+            fromTypeTextLabel.textColor = .red
         case .sender(.called(let seconds)), .receiver(.called(let seconds)):
             fromTypeTextLabel.text = Date.secondsToHours(seconds: seconds)
         }

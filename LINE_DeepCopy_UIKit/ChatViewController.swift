@@ -25,7 +25,7 @@ class ChatViewController: UIViewController {
         
         textFieldView.textField.delegate = self
         view.addSubview(textFieldView)
-        textFieldView.setHorizontalMargin(target: view, Constants.TextField.Margin.horizontal)
+        textFieldView.setHorizontalMargin(target: view, Constants.TextField.Padding.horizontal)
         textFieldView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
         textFieldView.setHeight(Constants.TextField.ViewHeight.ifself)
         

@@ -85,7 +85,7 @@ class Friend {
         }
     }
     
-    private func groupKeyWithDate(history: CallHistory) -> PastDateGroupKey {
+    func groupKeyWithDate(history: CallHistory) -> PastDateGroupKey {
         let startOfToday = Date().startOfDay
         
         switch history.date {

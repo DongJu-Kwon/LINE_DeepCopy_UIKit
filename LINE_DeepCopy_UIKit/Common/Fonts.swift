@@ -46,12 +46,20 @@ extension UIFont {
         UIFont.systemFont(ofSize: 10.5, weight: .regular)
     }
     
+    static var forContactCancelButton: UIFont {
+        UIFont.systemFont(ofSize: 12, weight: .regular)
+    }
+    
     static var forContactTableSection: UIFont {
         UIFont.systemFont(ofSize: 13, weight: .bold)
     }
     
     static var forContactTableCellName: UIFont {
         UIFont.systemFont(ofSize: 12, weight: .light)
+    }
+    
+    static var forContactDetailNavigationTitle: UIFont {
+        UIFont.systemFont(ofSize: 17, weight: .bold)
     }
     
     static var forContactDetailProfileFriendName: UIFont {

@@ -12,6 +12,7 @@ extension UIColor {
     static let gray = UIColor(named: "color_gray")!
     static let borderGray = UIColor(named: "color_gray_border")!
     static let selectedGray = UIColor(named: "color_gray_selected")!
+    static let cancelGray = UIColor(named: "color_gray_cancel")!
     
     static let pin = UIColor(named: "color_pin")
     static let mute = UIColor(named: "color_mute")

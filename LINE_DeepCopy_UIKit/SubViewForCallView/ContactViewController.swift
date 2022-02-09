@@ -10,7 +10,21 @@ import Then
 
 class ContactViewController: UIViewController {
     
-    let textFieldView = CustomTextFieldView(forContactView: true)
+    let textFieldView = ContactTextFieldView()
+    var textFieldViewTrailingAnthor: NSLayoutConstraint!
+    
+    let cancelButton = UIButton().then {
+        $0.setTitle("취소", for: .normal)
+        $0.titleLabel!.font = .forContactCancelButton
+        
+        $0.layer.cornerRadius = 2.0
+        $0.backgroundColor = .gray
+        $0.setBackgroundColor(color: .selectedGray, forState: .highlighted)
+        
+        $0.translatesAutoresizingMaskIntoConstraints = false
+    }
+    var cancelButtonLeadingAnthor: NSLayoutConstraint!
+    
     let tableView = UITableView(frame: .zero, style: .grouped).then {
         $0.backgroundColor = .background
         $0.translatesAutoresizingMaskIntoConstraints = false
@@ -29,21 +43,9 @@ class ContactViewController: UIViewController {
          */
         
         let statusBarView = UIView(frame: .zero)
-        view.addSubview(statusBarView)
+        self.view.addSubview(statusBarView)
         
         self.title = "연락처"
-//        let titleLabel = UILabel()
-//        let attributes: [NSString : AnyObject] = [NSFontAttributeName: UIFont.systemFontOfSize(12), NSForegroundColorAttributeName: colour, NSKernAttributeName : 5.0]
-//        titleLabel.attributedText = NSAttributedString(string: "My String", attributes: [
-//
-//        ])
-//        titleLabel.sizeToFit()
-//        self.navigationItem.titleView = titleLabel
-        
-//        navigationBar.tintColor = .white
-//        navigationBar.barTintColor = .gray
-//        navigationBar.backgroundColor = .green
-//        print(self.navigationBar.frame.height)
         
         let trailingBarItem = UIBarButtonItemButton(image: UIImage(systemName: "xmark")!.forNavigationBarXmark, defaultHeight: false)
         navigationItem.rightBarButtonItem = trailingBarItem
@@ -53,10 +55,26 @@ class ContactViewController: UIViewController {
         navigationItem.backButtonDisplayMode = .minimal
         
         textFieldView.textField.delegate = self
-        view.addSubview(textFieldView)
-        textFieldView.setHorizontalMargin(target: view, Constants.TextField.Margin.horizontal)
-        textFieldView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
+        self.view.addSubview(textFieldView)
+        NSLayoutConstraint.activate([
+            textFieldView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: Constants.TextField.Padding.top),
+            textFieldView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor, constant: Constants.TextField.Padding.horizontal)
+        ])
+        self.textFieldViewTrailingAnthor = textFieldView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: -Constants.TextField.Padding.horizontal).then {
+            $0.isActive = true
+        }
         textFieldView.setHeight(Constants.TextField.ViewHeight.ifself)
+        
+        self.cancelButton.addTarget(self, action: #selector(hideCancelButton), for: .touchUpInside)
+        self.view.addSubview(cancelButton)
+        self.cancelButtonLeadingAnthor = cancelButton.leadingAnchor.constraint(equalTo: textFieldView.trailingAnchor, constant: Constants.ContactView.Padding.cancelButtonLeadingBeforeShowing).then {
+            $0.isActive = true
+        }
+        NSLayoutConstraint.activate([
+            cancelButton.centerYAnchor.constraint(equalTo: textFieldView.centerYAnchor),
+            cancelButton.widthAnchor.constraint(equalToConstant: Constants.ContactView.ViewWidth.cancelButton),
+            cancelButton.heightAnchor.constraint(equalToConstant: Constants.ContactView.ViewHeight.cancelButton),
+        ])
         
         tableView.delegate = self
         tableView.dataSource = self
@@ -69,6 +87,26 @@ class ContactViewController: UIViewController {
         tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
     }
     
+    func showCancelButton() {
+        self.textFieldViewTrailingAnthor.constant = Constants.ContactView.Padding.textFieldViewTrailingAfterShowing
+        self.cancelButtonLeadingAnthor.constant = Constants.ContactView.Padding.cancelButtonLeadingAfterShowing
+        UIView.animate(withDuration: 0.2, delay: 0, options: []) {
+            self.view.layoutIfNeeded()
+        }
+        self.navigationController!.setNavigationBarHidden(true, animated: true)
+    }
+    
+    @objc func hideCancelButton() {
+        self.textFieldViewTrailingAnthor.constant = -Constants.TextField.Padding.horizontal
+        self.cancelButtonLeadingAnthor.constant = Constants.ContactView.Padding.cancelButtonLeadingBeforeShowing
+        UIView.animate(withDuration: 0.2, delay: 0, options: []) {
+            self.view.layoutIfNeeded()
+        }
+        self.navigationController?.setNavigationBarHidden(false, animated: true)
+        self.view.endEditing(true)
+        self.textFieldView.textField.text = ""
+    }
+    
     @objc func dismissView() {
         dismiss(animated: true)
     }
@@ -76,19 +114,18 @@ class ContactViewController: UIViewController {
 
 extension ContactViewController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        
+        self.showCancelButton()
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        
+        self.hideCancelButton()
+        print("TextField Did End Editing")
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        print("TextField Should Return")
         return true
-    }
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.view.endEditing(true)
     }
 }
 
@@ -114,15 +151,26 @@ extension ContactViewController: UITableViewDelegate {
             ])
         }
     }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return Constants.ContactView.ViewHeight.cell
+    }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        self.hideCancelButton()
+        
         let contactDetailViewController = ContactDetailViewController().then {
             $0.setFriend(with: FriendList.shared.sortedFriendWithKey[indexPath.section].1[indexPath.row])
         }
-        self.navigationController?.pushViewController(contactDetailViewController, animated: true)
+        self.navigationController!.pushViewController(contactDetailViewController, animated: true)
     }
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return Constants.ContactView.ViewHeight.cell
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        if self.textFieldView.textField.text!.isEmpty {
+            self.hideCancelButton()
+            print("ScrollView Will Begin Dragging")
+        }
+    }
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        self.restoreNavigationBar()
     }
 }
 extension ContactViewController: UITableViewDataSource {
@@ -140,6 +188,23 @@ extension ContactViewController: UITableViewDataSource {
                 $0.backgroundColor = .selectedGray
             }
         }
+    }
+}
+
+class ContactTextFieldView: CustomTextFieldView {
+    override init() {
+        super.init()
+        
+        barcodeImageView.removeFromSuperview()
+        
+        textFieldTrailingAnthor.isActive = false
+        textFieldTrailingAnthor = textField.trailingAnchor.constraint(equalTo: self.trailingAnchor).then {
+            $0.isActive = true
+        }
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
 

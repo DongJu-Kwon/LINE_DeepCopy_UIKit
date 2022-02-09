@@ -9,9 +9,12 @@ import UIKit
 import Then
 
 extension String {
-    var forPrefixCallCellName: String {
-        self.count > 18 ? "\(self.prefix(18))⋯" : self
+    func forPrefixCallCellName(count: Int) -> String {
+        return "\(self)⋯ (\(count))"
     }
+//    var forPrefixCallCellName: String {
+//        self.count > 18 ? "\(self.prefix(18))⋯" : self
+//    }
 }
 
 extension Date {
@@ -65,6 +68,20 @@ extension Date {
     
     var startOfYear: Date {
         Calendar.current.date(from: Calendar.current.dateComponents([.year], from: self.startOfDay))!
+    }
+}
+
+extension UIButton {
+    func setBackgroundColor(color: UIColor, forState: UIControl.State) {
+        self.clipsToBounds = true  // add this to maintain corner radius
+        UIGraphicsBeginImageContext(CGSize(width: 1, height: 1))
+        if let context = UIGraphicsGetCurrentContext() {
+            context.setFillColor(color.cgColor)
+            context.fill(CGRect(x: 0, y: 0, width: 1, height: 1))
+            let colorImage = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            self.setBackgroundImage(colorImage, for: forState)
+        }
     }
 }
 
@@ -122,7 +139,9 @@ class CustomTextFieldView: UIView {
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
     
-    init(forContactView: Bool = false) {
+    var textFieldTrailingAnthor: NSLayoutConstraint!
+    
+    init() {
         super.init(frame: .zero)
         self.backgroundColor = .selectedGray
         self.layer.cornerRadius = 6
@@ -130,29 +149,25 @@ class CustomTextFieldView: UIView {
         
         self.addSubview(searchImageView)
         self.addSubview(textField)
+        self.addSubview(barcodeImageView)
+        
+        self.textFieldTrailingAnthor = textField.trailingAnchor.constraint(equalTo: barcodeImageView.leadingAnchor, constant: Constants.TextField.Padding.textfieldTrailing).then {
+            $0.isActive = true
+        }
         
         NSLayoutConstraint.activate([
             searchImageView.centerYAnchor.constraint(equalTo: self.centerYAnchor),
             searchImageView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: Constants.TextField.Padding.searchLeading),
             searchImageView.widthAnchor.constraint(equalToConstant: Constants.TextField.ImageHeight.search),
             
-            textField.centerYAnchor.constraint(equalTo: self.centerYAnchor),
-            textField.leadingAnchor.constraint(equalTo: searchImageView.trailingAnchor, constant: Constants.TextField.Padding.textfieldLeading)
-        ])
-        
-        if forContactView {
-//            textField.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: Constants.TextField.Padding.textfieldTrailingForContact).isActive = true
-        } else {
-            self.addSubview(barcodeImageView)
+            textField.topAnchor.constraint(equalTo: self.topAnchor),
+            textField.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            textField.leadingAnchor.constraint(equalTo: searchImageView.trailingAnchor, constant: Constants.TextField.Padding.textfieldLeading),
             
-            NSLayoutConstraint.activate([
-                barcodeImageView.centerYAnchor.constraint(equalTo: self.centerYAnchor),
-                barcodeImageView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: Constants.TextField.Padding.barcodeTrailing),
-                barcodeImageView.widthAnchor.constraint(equalToConstant: Constants.TextField.ImageHeight.barcode),
-                
-//                textField.trailingAnchor.constraint(equalTo: barcodeImageView.leadingAnchor, constant: Constants.TextField.Padding.textfieldTrailing)
-            ])
-        }
+            barcodeImageView.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+            barcodeImageView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: Constants.TextField.Padding.barcodeTrailing),
+            barcodeImageView.widthAnchor.constraint(equalToConstant: Constants.TextField.ImageHeight.barcode),
+        ])
         
         self.translatesAutoresizingMaskIntoConstraints = false
     }

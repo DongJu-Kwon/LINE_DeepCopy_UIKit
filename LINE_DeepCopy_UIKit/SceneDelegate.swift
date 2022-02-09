@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Then
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -133,27 +134,61 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             FriendList.shared.friendArray.append($0)
         }
         
-        let friend1 = Friend(image: imageArray.randomElement()!, name: "깡견깡견깡견깡견깡견깡견깡견깡견깡견깡견")
+        let friend1 = Friend(image: imageArray.randomElement()!, name: "일이삼사오육칠팔구십일이삼사오육칠팔구십")
         [
             Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Date().startOfDay, parent: friend1),
             Friend.CallHistory(type: .voice, from: .sender(.cancelled), date: Date(), parent: friend1),
             Friend.CallHistory(type: .voice, from: .sender(.cancelled), date: Calendar.current.date(byAdding: .hour, value: 3, to: Date())!, parent: friend1),
             Friend.CallHistory(type: .voice, from: .sender(.cancelled), date: Date().previousDay, parent: friend1),
             Friend.CallHistory(type: .video, from: .sender(.called(5)), date: Calendar.current.date(byAdding: .hour, value: 5, to: Date())!, parent: friend1),
+            Friend.CallHistory(type: .video, from: .receiver(.called(71)), date: Date().previousDay.previousDay, parent: friend1),
+            Friend.CallHistory(type: .video, from: .receiver(.called(31)), date: Date().previousDay.previousDay, parent: friend1),
+            Friend.CallHistory(type: .video, from: .receiver(.called(100)), date: Date().previousDay.previousDay, parent: friend1),
+            Friend.CallHistory(type: .video, from: .receiver(.called(1000)), date: Date().previousDay.previousDay, parent: friend1),
+            Friend.CallHistory(type: .video, from: .receiver(.called(10000)), date: Date().previousDay.previousDay, parent: friend1),
+            Friend.CallHistory(type: .voice, from: .receiver(.missed), date: Date().previousDay.previousDay.startOfDay, parent: friend1),
+            Friend.CallHistory(type: .video, from: .receiver(.called(3700)), date: Date().previousDay.previousDay.previousDay, parent: friend1),
         ].forEach {
             friend1.callHistory.append($0)
         }
         FriendList.shared.friendArray.append(friend1)
         
-        let friend2 = Friend(image: imageArray.randomElement()!, name: "깡견동주깡견동주깡견동주깡견동주깡견동주")
+        let dateFormatter = DateFormatter().then {
+            $0.dateFormat = "yyyy-MM-dd HH:mm:ss"
+            $0.timeZone = NSTimeZone(name: "UTC") as TimeZone?
+        }
+        
+        let friend2 = Friend(image: imageArray.randomElement()!, name: "동주")
         [
-            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Date().startOfDay, parent: friend2),
-            Friend.CallHistory(type: .voice, from: .sender(.cancelled), date: Date(), parent: friend2),
-            Friend.CallHistory(type: .voice, from: .sender(.cancelled), date: Calendar.current.date(byAdding: .hour, value: 2, to: Date())!, parent: friend2),
-            Friend.CallHistory(type: .voice, from: .sender(.cancelled), date: Date().previousDay, parent: friend2),
+            Friend.CallHistory(type: .voice, from: .sender(.cancelled), date: dateFormatter.date(from: "2022-02-09 12:15:00")!, parent: friend2),
+            Friend.CallHistory(type: .voice, from: .sender(.cancelled), date: dateFormatter.date(from: "2022-02-09 11:28:00")!, parent: friend2),
         ].forEach {
             friend2.callHistory.append($0)
         }
         FriendList.shared.friendArray.append(friend2)
+        
+        let friend3 = Friend(image: imageArray.randomElement()!, name: "일이삼사오육칠팔구십일이삼사오육칠팔구십")
+        [
+            Friend.CallHistory(type: .video, from: .receiver(.missed), date: Calendar.current.date(byAdding: .hour, value: 2, to: Date())!, parent: friend3),
+        ].forEach {
+            friend3.callHistory.append($0)
+        }
+        FriendList.shared.friendArray.append(friend3)
+        
+        let friend4 = Friend(image: imageArray.randomElement()!, name: "일이삼사오육칠팔구십일이삼사오육칠팔구십")
+        [
+            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Date(), parent: friend4),
+            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Date(), parent: friend4),
+            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Date(), parent: friend4),
+            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Date(), parent: friend4),
+            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Date(), parent: friend4),
+            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Date(), parent: friend4),
+            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Date(), parent: friend4),
+            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Date(), parent: friend4),
+            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Date(), parent: friend4),
+        ].forEach {
+            friend4.callHistory.append($0)
+        }
+        FriendList.shared.friendArray.append(friend4)
     }
 }

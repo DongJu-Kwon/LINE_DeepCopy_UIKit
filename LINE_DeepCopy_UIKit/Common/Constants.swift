@@ -15,21 +15,18 @@ struct Constants {
     }
     struct TextField {
         struct ViewHeight {
-            static let ifself: CGFloat = 36
+            static let ifself: CGFloat = 40
         }
         struct ImageHeight {
             static let search: CGFloat = 13
             static let barcode: CGFloat = 16
         }
-        
-        struct Margin {
-            static let horizontal: CGFloat = 17
-        }
-        
         struct Padding {
+            static let top: CGFloat = 10
+            static let horizontal: CGFloat = 17
             static let searchLeading: CGFloat = 13
             static let textfieldLeading: CGFloat = 7
-//            static let textfieldTrailing: CGFloat = -12
+            static let textfieldTrailing: CGFloat = -7
             static let barcodeTrailing: CGFloat = -13
             
 //            static let textfieldTrailingForContact: CGFloat = -15
@@ -48,6 +45,7 @@ struct Constants {
         struct Padding {
             static let profileImageLeading: CGFloat = 12
             static let informationLeading: CGFloat = 12
+            static let informationTrailing: CGFloat = -23
             static let profileNameBottom: CGFloat = 5
             static let callDateLeading: CGFloat = 5
             static let callButtonTrailing: CGFloat = -20
@@ -55,7 +53,11 @@ struct Constants {
     }
     
     struct ContactView {
+        struct ViewWidth {
+            static let cancelButton: CGFloat = 46
+        }
         struct ViewHeight {
+            static let cancelButton = TextField.ViewHeight.ifself - 12
             static let section: CGFloat = 22
             static let cell: CGFloat = 60
         }
@@ -65,6 +67,9 @@ struct Constants {
             static let call: CGFloat = 18
         }
         struct Padding {
+            static let textFieldViewTrailingAfterShowing = -TextField.Padding.horizontal - 55
+            static let cancelButtonLeadingBeforeShowing: CGFloat = 50
+            static let cancelButtonLeadingAfterShowing: CGFloat = 12
             static let sectionLeading: CGFloat = 14
             static let profileImageLeading: CGFloat = 12
             static let profileNameLeading: CGFloat = 12
@@ -73,26 +78,19 @@ struct Constants {
     }
     
     struct ContactDetailView {
-        struct ScrollView {
-            struct ViewHeight {
-                static var itself: CGFloat {
-                    ProfileView.ViewHeight.itself + ButtonView.ViewHeight.itself
-                }
-            }
-            struct Padding {
-                static var horizontal: CGFloat = 28
-            }
-        }
         struct ProfileView {
             struct ViewHeight {
                 static let itself: CGFloat = 148
+                static let subView = Padding.topAnchor*2 + ImageHeight.profile
             }
             struct ImageHeight {
                 static let profile: CGFloat = 60
             }
             struct Padding {
                 static let topAnchor: CGFloat = 10
+                static let horizontal: CGFloat = 28
                 static let imageLeading: CGFloat = 25
+                static let alphaBottom = ViewHeight.subView + 35
             }
         }
         struct ButtonView {
@@ -111,10 +109,6 @@ struct Constants {
                 static let section: CGFloat = 60
                 static let cell: CGFloat = 35
             }
-            struct ViewWidth {
-                static let timeText: CGFloat = 40
-                static let callTypeText: CGFloat = 60
-            }
             struct ImageHeight {
                 static let from: CGFloat = 9
             }
@@ -122,7 +116,7 @@ struct Constants {
                 static let sectionLeading: CGFloat = 30
                 static let sectionBottom: CGFloat = -5
                 static let callFromImageLeading: CGFloat = 33
-                static let timeTextLeading: CGFloat = 14
+                static let timeTextLeading: CGFloat = 22
                 static let callTypeTextLeading: CGFloat = 5
                 static let fromTypeTextTrailing: CGFloat = -30
             }

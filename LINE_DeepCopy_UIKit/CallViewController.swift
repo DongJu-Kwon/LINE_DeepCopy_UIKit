@@ -41,18 +41,6 @@ class CallViewController: UIViewController {
         updateLayout()
     }
     
-    @objc func presentContactView() {
-//        let callViewController = ContactViewController()
-//        callViewController.modalPresentationStyle = .overFullScreen
-//        present(callViewController, animated: true)
-        
-        let callViewController = CustomNavigationController(rootViewController: ContactViewController()).then {
-            $0.modalPresentationStyle = .overFullScreen
-        }
-        present(callViewController, animated: true)
-        
-    }
-    
     func updateFriendsWhoHaveCallHistory() {
         friendsWhoHaveCallHistory = FriendList.shared.friendArray.filter {
             !$0.callHistory.isEmpty
@@ -93,6 +81,18 @@ class CallViewController: UIViewController {
             tableView.setFullWidth(target: self.view)
             tableView.setFullHeight(target: self.view)
         }
+    }
+    
+    @objc func presentContactView() {
+//        let callViewController = ContactViewController()
+//        callViewController.modalPresentationStyle = .overFullScreen
+//        present(callViewController, animated: true)
+        
+        let callViewController = CustomNavigationController(rootViewController: ContactViewController()).then {
+            $0.modalPresentationStyle = .overFullScreen
+        }
+        present(callViewController, animated: true)
+        
     }
 }
 
@@ -186,18 +186,6 @@ private class InformButton: UIButton {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    func setBackgroundColor(color: UIColor, forState: UIControl.State) {
-        self.clipsToBounds = true  // add this to maintain corner radius
-        UIGraphicsBeginImageContext(CGSize(width: 1, height: 1))
-        if let context = UIGraphicsGetCurrentContext() {
-            context.setFillColor(color.cgColor)
-            context.fill(CGRect(x: 0, y: 0, width: 1, height: 1))
-            let colorImage = UIGraphicsGetImageFromCurrentImageContext()
-            UIGraphicsEndImageContext()
-            self.setBackgroundImage(colorImage, for: forState)
-        }
-    }
 }
 
 class CallTableCell: UITableViewCell {
@@ -208,6 +196,16 @@ class CallTableCell: UITableViewCell {
     let profileNameLabel = UILabel().then {
         $0.attributedText = NSAttributedString(string: "", attributes: [.paragraphStyle: NSMutableParagraphStyle().then {
             $0.alignment = .left
+        }])
+        $0.numberOfLines = 1
+        $0.font = .forCallCellName
+        $0.textColor = .white
+        
+        $0.translatesAutoresizingMaskIntoConstraints = false
+    }
+    let historyCountLabel = UILabel().then {
+        $0.attributedText = NSAttributedString(string: "", attributes: [.paragraphStyle: NSMutableParagraphStyle().then {
+            $0.alignment = .right
         }])
         $0.numberOfLines = 1
         $0.font = .forCallCellName
@@ -241,6 +239,7 @@ class CallTableCell: UITableViewCell {
         contentView.addSubview(profileImageView)
         contentView.addSubview(informationView)
         informationView.addSubview(profileNameLabel)
+        informationView.addSubview(historyCountLabel)
         informationView.addSubview(callFromImageView)
         informationView.addSubview(callDateLabel)
         contentView.addSubview(callButton)
@@ -252,10 +251,16 @@ class CallTableCell: UITableViewCell {
             
             profileImageView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: Constants.CallCell.Padding.profileImageLeading),
             informationView.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: Constants.CallCell.Padding.informationLeading),
+            informationView.trailingAnchor.constraint(equalTo: callButton.leadingAnchor, constant: Constants.CallCell.Padding.informationTrailing),
             callButton.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: Constants.CallCell.Padding.callButtonTrailing),
             
             profileNameLabel.topAnchor.constraint(equalTo: informationView.topAnchor),
-            profileNameLabel.widthAnchor.constraint(equalTo: informationView.widthAnchor),
+            profileNameLabel.leadingAnchor.constraint(equalTo: informationView.leadingAnchor),
+            historyCountLabel.topAnchor.constraint(equalTo: informationView.topAnchor),
+
+//            historyCountLabel.leadingAnchor.constraint(equalTo: profileNameLabel.trailingAnchor),
+            historyCountLabel.trailingAnchor.constraint(equalTo: informationView.trailingAnchor),
+            
             callFromImageView.topAnchor.constraint(equalTo: profileNameLabel.bottomAnchor, constant: Constants.CallCell.Padding.profileNameBottom),
             callFromImageView.leadingAnchor.constraint(equalTo: informationView.leadingAnchor),
             callFromImageView.bottomAnchor.constraint(equalTo: informationView.bottomAnchor),
@@ -272,6 +277,7 @@ class CallTableCell: UITableViewCell {
 //        informationView.backgroundColor = .orange
 //        callImageView.backgroundColor = .yellow
 //        profileNameLabel.backgroundColor = .green
+//        historyCountLabel.backgroundColor = .magenta
 //        callFromImageView.backgroundColor = .blue
 //        callDateLabel.backgroundColor = .brown
     }
@@ -280,18 +286,31 @@ class CallTableCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setInformation(with: Friend) {
-        let lastCallHistory = with.lastCallHistroy!
+    func setInformation(with friend: Friend) {
+        let lastCallHistory = friend.lastCallHistroy!
+        let callHistoryCount = friend.callHistory.count
+        var profileName = friend.name
+        var nameChanged = false
         
-        profileImageView.image = with.image.forCallCellProfile
-        profileNameLabel.text = with.callHistory.count > 1 ? "\(with.name.forPrefixCallCellName) (\(with.callHistory.count))" : with.name
+        profileImageView.image = friend.image.forCallCellProfile
+        historyCountLabel.text = callHistoryCount > 1 ? "(\(callHistoryCount))" : ""
+        profileNameLabel.text = {
+            while ( "\(profileName)\(nameChanged ? "⋯": "")" as NSString).size(withAttributes: [:]).width > 220 - historyCountLabel.intrinsicContentSize.width {
+                profileName.removeLast()
+                nameChanged = true
+            }
+            return  "\(profileName)\(nameChanged ? "⋯": "")"
+        }()
+        if case .receiver(.missed) = lastCallHistory.fromType {
+            profileNameLabel.textColor = .red
+        }
         switch lastCallHistory.fromType {
         case .sender(_):
             callFromImageView.image = UIImage(systemName: "arrow.up.right")!.forCallCellFrom
         case .receiver(_):
             callFromImageView.image = UIImage(systemName: "arrow.down.backward")!.forCallCellFrom
         }
-        callDateLabel.text = "\(with.lastCallHistroy!.date.toKST)"
+        callDateLabel.text = Date().startOfDay <= lastCallHistory.date ? lastCallHistory.date.filterBeforeHoursWithKST : friend.groupKeyWithDate(history: lastCallHistory).rawValue
         switch lastCallHistory.callType {
         case .voice:
             callButton.setImage(voiceButtonImage, for: .normal)
@@ -300,9 +319,5 @@ class CallTableCell: UITableViewCell {
             callButton.setImage(videoButtonImage, for: .normal)
             callButton.setImage(videoButtonImage, for: .highlighted)
         }
-        
-//        callButton.addAction(UIAction { _ in
-//            friend.callHistory.insert(.init(type: lastCallHistory.callType, from: .sender(.cancelled), date: Date(), parent: friend), at: 0)
-//        }, for: .touchUpInside)
     }
 }
