@@ -74,6 +74,7 @@ struct Constants {
             static let profileImageLeading: CGFloat = 12
             static let profileNameLeading: CGFloat = 12
             static let callButtonTrailing: CGFloat = -20
+            static let notFoundTop: CGFloat = 180
         }
     }
     

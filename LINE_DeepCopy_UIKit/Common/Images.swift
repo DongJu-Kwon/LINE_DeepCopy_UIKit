@@ -30,6 +30,18 @@ extension UIImage {
         self.resizedToSquare(number: 23)
     }
     
+    var forTextFieldClearButton: UIImage {
+        self.resizedToSquare(number: 18)
+    }
+    
+    var forTextfieldSearch: UIImage {
+        self.resizedToSquare(number:  Constants.TextField.ImageHeight.search)
+    }
+    
+    var forTextfieldBarcode: UIImage {
+        self.resizedToSquare(number: Constants.TextField.ImageHeight.barcode)
+    }
+    
     var forCallCellProfile: UIImage {
         self.resizedToSquare(number: Constants.CallCell.ImageHeight.profile)
     }
@@ -40,14 +52,6 @@ extension UIImage {
     
     var forCallCellCall: UIImage {
         self.resizedToSquare(number: Constants.CallCell.ImageHeight.call)
-    }
-    
-    var forTextfieldSearch: UIImage {
-        self.resizedToSquare(number:  Constants.TextField.ImageHeight.search)
-    }
-    
-    var forTextfieldBarcodeㅋ: UIImage {
-        self.resizedToSquare(number: Constants.TextField.ImageHeight.barcode)
     }
     
     var forContactCellProfile: UIImage {

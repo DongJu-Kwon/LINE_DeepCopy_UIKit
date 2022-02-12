@@ -124,18 +124,23 @@ class CustomTextFieldView: UIView {
         $0.tintColor = .gray
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
-    let barcodeImageView = UIImageView(image: UIImage(systemName: "barcode.viewfinder")!.forTextfieldBarcodeㅋ).then {
+    let barcodeImageView = UIImageView(image: UIImage(systemName: "barcode.viewfinder")!.forTextfieldBarcode).then {
         $0.tintColor = .gray
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
     let textField = UITextField().then {
-        $0.textColor = .gray
         $0.backgroundColor = .selectedGray
-        $0.clearButtonMode = .whileEditing
+        $0.clearButtonMode = .always
         $0.attributedPlaceholder = NSAttributedString(string: "검색", attributes: [
-            NSAttributedString.Key.foregroundColor: UIColor.gray,
-            NSAttributedString.Key.font : UIFont.forTextFieldPlaceholder
+            .foregroundColor: UIColor.gray,
+            .font: UIFont.forTextField
         ])
+        
+        if let button = $0.value(forKey: "_clearButton") as? UIButton {
+            button.setImage(button.imageView!.image!.forTextFieldClearButton, for: .normal)
+            button.tintColor = .gray
+        }
+        
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
     

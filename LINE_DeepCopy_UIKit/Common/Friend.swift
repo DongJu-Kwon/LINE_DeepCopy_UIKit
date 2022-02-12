@@ -157,7 +157,6 @@ extension Friend.CallHistory: Equatable, Hashable, Comparable {
 
 class FriendList {
     static let shared = FriendList()
-    
     private init() {}
     
     var friendArray: [Friend] = []
@@ -187,7 +186,7 @@ class FriendList {
         }
     }
     
-    public var sortedFriendWithKey: [(String, [Friend])] {
+    public var sortedFriendWithKey: [(key: String, friends: [Friend])] {
         let dictionary = Dictionary(grouping: self.friendArray) {
             FriendList.shared.groupKey(string: $0.name)
         }
@@ -212,5 +211,25 @@ class FriendList {
                 $0.name < $1.name
             })
         }
+    }
+    
+    private var searchKeyword = "" {
+        willSet(newValue) {
+            if searchKeyword != newValue {
+                self.friendsWhoseNameContainsSearchKeyword = self.sortedFriendWithKey.map {
+                    $0.friends
+                }.flatMap {
+                    $0
+                }.filter {
+                    $0.name.lowercased().contains(newValue.lowercased())
+                }
+            }
+        }
+    }
+    private var friendsWhoseNameContainsSearchKeyword: [Friend] = []
+    
+    public func friendsWhoseNameContains(string: String) -> [Friend] {
+        self.searchKeyword = string
+        return self.friendsWhoseNameContainsSearchKeyword
     }
 }

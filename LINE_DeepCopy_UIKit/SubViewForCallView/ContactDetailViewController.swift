@@ -216,8 +216,7 @@ extension ContactDetailViewController: UITableViewDelegate {
         case ...0:
             self.profileViewTopAnchor.constant = 0
         case ...Constants.ContactDetailView.ProfileView.ViewHeight.itself:
-//            self.profileViewTopAnchor.constant = -scrollPosition
-            return
+            self.profileViewTopAnchor.constant = -scrollPosition
         default:
             return
         }
