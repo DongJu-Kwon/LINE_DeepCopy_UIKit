@@ -23,6 +23,27 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             CustomNavigationController(rootViewController: $0)
         }
         
+        zip(tabViewArray, zip([
+            "홈", "대화", "VOOM", "통화"
+        ], [
+            [UIImage(systemName: "house"), UIImage(systemName: "house.fill")],
+            [UIImage(systemName: "message"), UIImage(systemName: "message.fill")],
+            [UIImage(systemName: "play"), UIImage(systemName: "play.fill")],
+            [UIImage(systemName: "phone"), UIImage(systemName: "phone.fill")],
+        ].map {
+            $0.map {
+                $0!.forTabbarItem
+            }
+        }).map {
+            UITabBarItem(title: $0, image: $1[0], selectedImage: $1[1]).then {
+                $0.setTitleTextAttributes([.font : UIFont.forTabBarItemTitle], for: .normal)
+            }
+        }).forEach {
+            $0.0.tabBarItem = $0.1
+        }
+        
+        UITabBar.appearance().backgroundColor = .background
+        
         let tabbarController = UITabBarController().then {
             $0.tabBar.tintColor = .white
             $0.tabBar.unselectedItemTintColor = .white
@@ -30,15 +51,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             $0.tabBar.isTranslucent = false
             
             $0.setViewControllers(navigationControllerArray, animated: false)
-        }
-        
-        tabViewArray[0].tabBarItem = UITabBarItem(title: "홈", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house.fill"))
-        tabViewArray[1].tabBarItem = UITabBarItem(title: "대화", image: UIImage(systemName: "message"), selectedImage: UIImage(systemName: "message.fill"))
-        tabViewArray[2].tabBarItem = UITabBarItem(title: "VOOM", image: UIImage(systemName: "play"), selectedImage: UIImage(systemName: "play.fill"))
-        tabViewArray[3].tabBarItem = UITabBarItem(title: "통화", image: UIImage(systemName: "phone"), selectedImage: UIImage(systemName: "phone.fill"))
-        
-        tabViewArray.forEach {
-            $0.tabBarItem.setTitleTextAttributes([NSAttributedString.Key.font : UIFont.forTabBarItemTitle], for: .normal)
         }
         
         /*
@@ -94,7 +106,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             "권오승",
             "김민서소영",
             "김시본",
-            "깡견",
+//            "깡견",
             "린파나요우",
             "맹돌이",
             "배현규",
@@ -165,7 +177,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         ].forEach {
             friend2.callHistory.append($0)
         }
-        FriendList.shared.friendArray.append(friend2)
+//        FriendList.shared.friendArray.append(friend2)
         
         let friend3 = Friend(image: imageArray.randomElement()!, name: "일이삼사오육칠팔구십일이삼사오육칠팔구십")
         [
@@ -177,15 +189,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let friend4 = Friend(image: imageArray.randomElement()!, name: "일이삼사오육칠팔구십일이삼사오육칠팔구십")
         [
-            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Date(), parent: friend4),
-            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Date(), parent: friend4),
-            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Date(), parent: friend4),
-            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Date(), parent: friend4),
-            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Date(), parent: friend4),
-            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Date(), parent: friend4),
-            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Date(), parent: friend4),
-            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Date(), parent: friend4),
-            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Date(), parent: friend4),
+            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Calendar.current.date(byAdding: .day, value: -7, to: Date())!, parent: friend4),
+            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Calendar.current.date(byAdding: .day, value: -7, to: Date())!, parent: friend4),
+            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Calendar.current.date(byAdding: .day, value: -7, to: Date())!, parent: friend4),
+            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Calendar.current.date(byAdding: .day, value: -7, to: Date())!, parent: friend4),
+            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Calendar.current.date(byAdding: .day, value: -7, to: Date())!, parent: friend4),
+            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Calendar.current.date(byAdding: .day, value: -7, to: Date())!, parent: friend4),
+            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Calendar.current.date(byAdding: .day, value: -7, to: Date())!, parent: friend4),
+            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Calendar.current.date(byAdding: .day, value: -7, to: Date())!, parent: friend4),
+            Friend.CallHistory(type: .video, from: .sender(.cancelled), date: Calendar.current.date(byAdding: .day, value: -7, to: Date())!, parent: friend4),
         ].forEach {
             friend4.callHistory.append($0)
         }

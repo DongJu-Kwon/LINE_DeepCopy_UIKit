@@ -25,10 +25,34 @@ class HomeViewController: UIViewController {
         
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        /*
+         * 이 코드 안됨
+         */
+        
+        let statusBackgroundView = UIView(frame: self.view.window!.windowScene!.statusBarManager!.statusBarFrame).then {
+            $0.backgroundColor = .background
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            self.view.addSubview($0)
+            
+            NSLayoutConstraint.activate([
+                $0.topAnchor.constraint(equalTo: view.topAnchor),
+                $0.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                $0.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                $0.widthAnchor.constraint(equalTo: view.widthAnchor)
+            ])
+        }
+    }
+    
     override func viewSafeAreaInsetsDidChange() {
 
     }
-
-
 }
 

@@ -27,12 +27,14 @@ class ContactViewController: UIViewController {
     
     let tableView = UITableView(frame: .zero, style: .grouped).then {
         $0.backgroundColor = .background
+        $0.separatorStyle = .none
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
     
     let searchedTableView = UITableView(frame: .zero, style: .plain).then {
         $0.backgroundColor = .background
         $0.sectionHeaderHeight = 0
+        $0.separatorStyle = .none
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
     
@@ -142,7 +144,7 @@ class ContactViewController: UIViewController {
             
             $0.setFullWidth(target: view)
             $0.topAnchor.constraint(equalTo: textFieldView.bottomAnchor, constant: 15).isActive = true
-            $0.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+            $0.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         }
         
         let _ = self.searchedTableView.then {
@@ -171,7 +173,7 @@ class ContactViewController: UIViewController {
     func showCancelButton() {
         self.textFieldViewTrailingAnthor.constant = Constants.ContactView.Padding.textFieldViewTrailingAfterShowing
         self.cancelButtonLeadingAnthor.constant = Constants.ContactView.Padding.cancelButtonLeadingAfterShowing
-        UIView.animate(withDuration: 0.2, delay: 0, options: []) {
+        UIView.animate(withDuration: 0.3, delay: 0, options: []) {
             self.view.layoutIfNeeded()
         }
         self.navigationController!.setNavigationBarHidden(true, animated: true)
@@ -180,7 +182,7 @@ class ContactViewController: UIViewController {
     @objc func hideCancelButton() {
         self.textFieldViewTrailingAnthor.constant = -Constants.TextField.Padding.horizontal
         self.cancelButtonLeadingAnthor.constant = Constants.ContactView.Padding.cancelButtonLeadingBeforeShowing
-        UIView.animate(withDuration: 0.2, delay: 0, options: []) {
+        UIView.animate(withDuration: 0.3, delay: 0, options: []) {
             self.view.layoutIfNeeded()
         }
         self.navigationController!.setNavigationBarHidden(false, animated: true)
@@ -240,7 +242,10 @@ extension ContactViewController: UITableViewDelegate {
         return tableView == self.tableView ? FriendList.shared.sortedFriendWithKey.count : 1
     }
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return tableView == self.tableView ? Constants.ContactView.ViewHeight.section : 0
+        return tableView == self.tableView ? Constants.ContactView.ViewHeight.header : 0
+    }
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return tableView == self.tableView ? Constants.ContactView.ViewHeight.footer : 0
     }
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         return UITableViewHeaderFooterView().then {
@@ -255,6 +260,13 @@ extension ContactViewController: UITableViewDelegate {
                 label.centerYAnchor.constraint(equalTo: $0.centerYAnchor),
                 label.leadingAnchor.constraint(equalTo: $0.leadingAnchor, constant: Constants.ContactView.Padding.sectionLeading),
             ])
+        }
+    }
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        return UITableViewHeaderFooterView().then {
+            $0.backgroundView = UIView().then {
+                $0.backgroundColor = .background
+            }
         }
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -274,8 +286,12 @@ extension ContactViewController: UITableViewDelegate {
         self.navigationController!.pushViewController(contactDetailViewController, animated: true)
     }
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        scrollView.indicatorStyle = .white
+        
         if self.textFieldView.textField.text!.isEmpty {
             self.hideCancelButton()
+        } else if viewState != .default {
+            self.view.endEditing(true)
         }
     }
 }
@@ -358,11 +374,10 @@ class ContactTableCell: UITableViewCell {
     
     func setFriend(with friend: Friend, searchKeyword: String? = nil) {
         self.profileImageView.image = friend.image.forContactCellProfile
-        var attributedString = NSMutableAttributedString(string: friend.name, attributes: [
+        let attributedString = NSMutableAttributedString(string: friend.name, attributes: [
             .paragraphStyle: NSMutableParagraphStyle().then {
-            $0.alignment = .left
-            $0.lineBreakMode = .byTruncatingTail
-                
+                $0.alignment = .left
+                $0.lineBreakMode = .byTruncatingTail
             }]
         )
         self.backgroundColor = .background

@@ -8,6 +8,11 @@
 import UIKit
 
 struct Constants {
+    struct TabBar {
+        struct ImageHeight {
+            static let itself: CGFloat = 23
+        }
+    }
     struct NavigationBar {
         struct ImageHeight {
             static let xmark: CGFloat = 18
@@ -15,14 +20,14 @@ struct Constants {
     }
     struct TextField {
         struct ViewHeight {
-            static let ifself: CGFloat = 40
+            static let ifself: CGFloat = 42
         }
         struct ImageHeight {
             static let search: CGFloat = 13
             static let barcode: CGFloat = 16
         }
         struct Padding {
-            static let top: CGFloat = 10
+            static let top: CGFloat = 3
             static let horizontal: CGFloat = 17
             static let searchLeading: CGFloat = 13
             static let textfieldLeading: CGFloat = 7
@@ -33,7 +38,7 @@ struct Constants {
         }
     }
     
-    struct CallCell {
+    struct CallView {
         struct ViewHeight {
             static let cell: CGFloat = 70
         }
@@ -47,6 +52,8 @@ struct Constants {
             static let informationLeading: CGFloat = 12
             static let informationTrailing: CGFloat = -23
             static let profileNameBottom: CGFloat = 5
+            static let historyCountLeading: CGFloat = 4
+            static let historyCountTrailing: CGFloat = -7
             static let callDateLeading: CGFloat = 5
             static let callButtonTrailing: CGFloat = -20
         }
@@ -58,7 +65,8 @@ struct Constants {
         }
         struct ViewHeight {
             static let cancelButton = TextField.ViewHeight.ifself - 12
-            static let section: CGFloat = 22
+            static let header: CGFloat = 22
+            static let footer: CGFloat = 40
             static let cell: CGFloat = 60
         }
         struct ImageHeight {
@@ -68,7 +76,7 @@ struct Constants {
         }
         struct Padding {
             static let textFieldViewTrailingAfterShowing = -TextField.Padding.horizontal - 55
-            static let cancelButtonLeadingBeforeShowing: CGFloat = 50
+            static let cancelButtonLeadingBeforeShowing: CGFloat = 17
             static let cancelButtonLeadingAfterShowing: CGFloat = 12
             static let sectionLeading: CGFloat = 14
             static let profileImageLeading: CGFloat = 12

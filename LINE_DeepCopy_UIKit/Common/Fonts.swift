@@ -11,7 +11,7 @@ import UIKit
 
 extension UIFont {
     static var forTabBarItemTitle: UIFont {
-        UIFont.systemFont(ofSize: 9, weight: .black)
+        UIFont.systemFont(ofSize: 9, weight: .regular)
     }
     
     static var forUIBarButtonItem: UIFont {
@@ -39,7 +39,7 @@ extension UIFont {
     }
     
     static var forCallCellName: UIFont {
-        UIFont.systemFont(ofSize: 12.5, weight: .regular)
+        UIFont.systemFont(ofSize: 12, weight: .regular)
     }
     
     static var forCallCellDate: UIFont {

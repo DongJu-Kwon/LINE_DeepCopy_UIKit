@@ -18,6 +18,10 @@ extension UIImage {
         return self.resized(to: CGSize(width: number, height: number)).withRenderingMode(.alwaysTemplate)
     }
     
+    var forTabbarItem: UIImage {
+        self.resizedToSquare(number: Constants.TabBar.ImageHeight.itself)
+    }
+    
     var forNavigationBarXmark: UIImage {
         self.resizedToSquare(number: Constants.NavigationBar.ImageHeight.xmark)
     }
@@ -43,15 +47,15 @@ extension UIImage {
     }
     
     var forCallCellProfile: UIImage {
-        self.resizedToSquare(number: Constants.CallCell.ImageHeight.profile)
+        self.resizedToSquare(number: Constants.CallView.ImageHeight.profile)
     }
     
     var forCallCellFrom: UIImage {
-        self.resizedToSquare(number: Constants.CallCell.ImageHeight.from)
+        self.resizedToSquare(number: Constants.CallView.ImageHeight.from)
     }
     
     var forCallCellCall: UIImage {
-        self.resizedToSquare(number: Constants.CallCell.ImageHeight.call)
+        self.resizedToSquare(number: Constants.CallView.ImageHeight.call)
     }
     
     var forContactCellProfile: UIImage {

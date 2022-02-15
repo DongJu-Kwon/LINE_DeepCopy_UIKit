@@ -8,15 +8,6 @@
 import UIKit
 import Then
 
-extension String {
-    func forPrefixCallCellName(count: Int) -> String {
-        return "\(self)⋯ (\(count))"
-    }
-//    var forPrefixCallCellName: String {
-//        self.count > 18 ? "\(self.prefix(18))⋯" : self
-//    }
-}
-
 extension Date {
     func formatting(with: String) -> String {
         DateFormatter().then {
@@ -33,6 +24,14 @@ extension Date {
     }
     var filterBeforeHoursWithKST: String {
         self.formatting(with: "HH:mm")
+    }
+    var weekday: String {
+        ["일", "월", "화", "수", "목", "금", "토"].map {
+            $0 + "요일"
+        }[Calendar.current.dateComponents([.weekday], from: self).weekday! - 1]
+    }
+    var monthAndDaysWithKST: String {
+        self.formatting(with: "M/d")
     }
     static func secondsToHours(seconds: Int) -> String {
         var returnValue = ""
@@ -120,13 +119,25 @@ class UIBarButtonItemButton: UIBarButtonItem {
 }
 
 class CustomTextFieldView: UIView {
-    let searchImageView = UIImageView(image: UIImage(systemName: "magnifyingglass")!.forTextfieldSearch).then {
+    let searchImageView = UIButton().then {
+        let searchImage = UIImage(systemName: "magnifyingglass")!.forTextfieldSearch
+        $0.setImage(searchImage, for: .normal)
+        $0.setImage(searchImage, for: .highlighted)
         $0.tintColor = .gray
+        $0.addTarget(self, action: #selector(searchImageViewTouched), for: .touchUpInside)
+        
+        /*
+         * addGestureRecognizer 안먹음. 왜? 왜? 왜왜왜왜왜? 왜왜왜왜왜왜왜왜왜왜왜왜왜왜왜?
+         */
+        
+        $0.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(searchImageViewTouched)))
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
     let barcodeImageView = UIImageView(image: UIImage(systemName: "barcode.viewfinder")!.forTextfieldBarcode).then {
         $0.tintColor = .gray
         $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.isUserInteractionEnabled = true
+        $0.addGestureRecognizer(.init(target: self, action: #selector(barcodeImageViewTouched)))
     }
     let textField = UITextField().then {
         $0.backgroundColor = .selectedGray
@@ -179,6 +190,14 @@ class CustomTextFieldView: UIView {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    @objc func searchImageViewTouched() {
+        textField.becomeFirstResponder()
+    }
+    
+    @objc func barcodeImageViewTouched() {
+        print(1)
     }
 }
 

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Then
 
 class ChatViewController: UIViewController {
     
@@ -14,12 +15,12 @@ class ChatViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .background
+        self.view.backgroundColor = .background
         
         let leadingBarItem = UIBarButtonItemLabel("대화")
         navigationItem.leftBarButtonItem = leadingBarItem
         
-        let newChatRoomTrailingBarItem = UIBarButtonItemButton(image: UIImage(systemName: "person.circle.fill")!)
+        let newChatRoomTrailingBarItem = UIBarButtonItemButton(image: UIImage(systemName: "plus.message")!)
         let editChatListTrailingBarItem = UIBarButtonItemButton(image: UIImage(systemName: "list.dash")!)
         navigationItem.rightBarButtonItems = [newChatRoomTrailingBarItem, editChatListTrailingBarItem]
         
@@ -28,7 +29,6 @@ class ChatViewController: UIViewController {
         textFieldView.setHorizontalMargin(target: view, Constants.TextField.Padding.horizontal)
         textFieldView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
         textFieldView.setHeight(Constants.TextField.ViewHeight.ifself)
-        
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -37,6 +37,12 @@ class ChatViewController: UIViewController {
 }
 
 extension ChatViewController: UITextFieldDelegate {
-    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        self.view.endEditing(true)
+        let searchViewController = SearchViewController().then { _ in
+            
+        }
+        self.navigationController!.pushViewController(searchViewController, animated: false)
+    }
 }
 

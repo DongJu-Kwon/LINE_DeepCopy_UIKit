@@ -101,12 +101,11 @@ extension CallViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
         let contactDetailViewController = ContactDetailViewController().then {
             $0.setFriend(with: friendsWhoHaveCallHistory[indexPath.row])
-            $0.fromCallView = true
         }
         self.navigationController?.pushViewController(contactDetailViewController, animated: true)
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return Constants.CallCell.ViewHeight.cell
+        return Constants.CallView.ViewHeight.cell
     }
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let deleteAction = UIContextualAction(style: .destructive, title: "삭제") { (UIContextualAction, UIView, success: @escaping (Bool) -> Void) in
@@ -249,23 +248,20 @@ class CallTableCell: UITableViewCell {
             informationView.centerYAnchor.constraint(equalTo: safeAreaLayoutGuide.centerYAnchor),
             callButton.centerYAnchor.constraint(equalTo: safeAreaLayoutGuide.centerYAnchor),
             
-            profileImageView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: Constants.CallCell.Padding.profileImageLeading),
-            informationView.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: Constants.CallCell.Padding.informationLeading),
-            informationView.trailingAnchor.constraint(equalTo: callButton.leadingAnchor, constant: Constants.CallCell.Padding.informationTrailing),
-            callButton.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: Constants.CallCell.Padding.callButtonTrailing),
+            profileImageView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: Constants.CallView.Padding.profileImageLeading),
+            informationView.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: Constants.CallView.Padding.informationLeading),
+            informationView.trailingAnchor.constraint(equalTo: callButton.leadingAnchor, constant: Constants.CallView.Padding.informationTrailing),
+            callButton.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: Constants.CallView.Padding.callButtonTrailing),
             
             profileNameLabel.topAnchor.constraint(equalTo: informationView.topAnchor),
             profileNameLabel.leadingAnchor.constraint(equalTo: informationView.leadingAnchor),
             historyCountLabel.topAnchor.constraint(equalTo: informationView.topAnchor),
-
-//            historyCountLabel.leadingAnchor.constraint(equalTo: profileNameLabel.trailingAnchor),
-            historyCountLabel.trailingAnchor.constraint(equalTo: informationView.trailingAnchor),
             
-            callFromImageView.topAnchor.constraint(equalTo: profileNameLabel.bottomAnchor, constant: Constants.CallCell.Padding.profileNameBottom),
+            callFromImageView.topAnchor.constraint(equalTo: profileNameLabel.bottomAnchor, constant: Constants.CallView.Padding.profileNameBottom),
             callFromImageView.leadingAnchor.constraint(equalTo: informationView.leadingAnchor),
             callFromImageView.bottomAnchor.constraint(equalTo: informationView.bottomAnchor),
-            callDateLabel.topAnchor.constraint(equalTo: profileNameLabel.bottomAnchor, constant: Constants.CallCell.Padding.profileNameBottom),
-            callDateLabel.leadingAnchor.constraint(equalTo: callFromImageView.trailingAnchor, constant: Constants.CallCell.Padding.callDateLeading),
+            callDateLabel.topAnchor.constraint(equalTo: profileNameLabel.bottomAnchor, constant: Constants.CallView.Padding.profileNameBottom),
+            callDateLabel.leadingAnchor.constraint(equalTo: callFromImageView.trailingAnchor, constant: Constants.CallView.Padding.callDateLeading),
             callDateLabel.bottomAnchor.constraint(equalTo: informationView.bottomAnchor),
         ])
         
@@ -301,6 +297,13 @@ class CallTableCell: UITableViewCell {
             }
             return  "\(profileName)\(nameChanged ? "⋯": "")"
         }()
+        
+        if nameChanged {
+            historyCountLabel.trailingAnchor.constraint(equalTo: informationView.trailingAnchor, constant: Constants.CallView.Padding.historyCountTrailing).isActive = true
+        } else {
+            historyCountLabel.leadingAnchor.constraint(equalTo: profileNameLabel.trailingAnchor, constant: Constants.CallView.Padding.historyCountLeading).isActive = true
+        }
+        
         if case .receiver(.missed) = lastCallHistory.fromType {
             profileNameLabel.textColor = .red
         }
@@ -310,7 +313,15 @@ class CallTableCell: UITableViewCell {
         case .receiver(_):
             callFromImageView.image = UIImage(systemName: "arrow.down.backward")!.forCallCellFrom
         }
-        callDateLabel.text = Date().startOfDay <= lastCallHistory.date ? lastCallHistory.date.filterBeforeHoursWithKST : friend.groupKeyWithDate(history: lastCallHistory).rawValue
+        
+        switch lastCallHistory.date {
+        case ..<Calendar.current.date(byAdding: .day, value: -6, to: Date().startOfDay)!:
+            callDateLabel.text = lastCallHistory.date.monthAndDaysWithKST
+        case ..<Date().startOfDay:
+            callDateLabel.text = lastCallHistory.date.weekday
+        default:
+            callDateLabel.text = lastCallHistory.date.filterBeforeHoursWithKST
+        }
         switch lastCallHistory.callType {
         case .voice:
             callButton.setImage(voiceButtonImage, for: .normal)
