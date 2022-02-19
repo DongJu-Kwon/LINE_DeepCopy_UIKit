@@ -25,7 +25,7 @@ class ContactViewController: UIViewController {
     }
     var cancelButtonLeadingAnthor: NSLayoutConstraint!
     
-    let tableView = UITableView(frame: .zero, style: .grouped).then {
+    let tableView = UITableView(frame: .zero, style: .plain).then {
         $0.backgroundColor = .background
         $0.separatorStyle = .none
         $0.translatesAutoresizingMaskIntoConstraints = false
@@ -65,7 +65,7 @@ class ContactViewController: UIViewController {
     var viewState = ViewState.default {
         didSet {
             switch viewState {
-            case .default:
+            case .`default`:
                 tableView.isHidden = false
                 notFoundView.isHidden = true
                 searchedTableView.isHidden = true
@@ -105,24 +105,23 @@ class ContactViewController: UIViewController {
         
         navigationItem.backButtonDisplayMode = .minimal
         
-        let _ = self.textFieldView.then {
-            let _ = $0.textField.then {
+        self.textFieldView.do {
+            $0.textField.do {
                 $0.delegate = self
                 $0.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
             }
             
             self.view.addSubview($0)
+            self.textFieldViewTrailingAnthor = $0.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: -Constants.TextField.Padding.horizontal)
             NSLayoutConstraint.activate([
                 $0.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: Constants.TextField.Padding.top),
-                $0.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor, constant: Constants.TextField.Padding.horizontal)
+                $0.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor, constant: Constants.TextField.Padding.horizontal),
+                $0.heightAnchor.constraint(equalToConstant: Constants.TextField.ViewHeight.ifself),
+                self.textFieldViewTrailingAnthor
             ])
-            self.textFieldViewTrailingAnthor = $0.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: -Constants.TextField.Padding.horizontal).then {
-                $0.isActive = true
-            }
-            $0.setHeight(Constants.TextField.ViewHeight.ifself)
         }
         
-        let _ = self.cancelButton.then {
+        self.cancelButton.do {
             $0.addTarget(self, action: #selector(hideCancelButton), for: .touchUpInside)
             self.view.addSubview($0)
             self.cancelButtonLeadingAnthor = $0.leadingAnchor.constraint(equalTo: textFieldView.trailingAnchor, constant: Constants.ContactView.Padding.cancelButtonLeadingBeforeShowing).then {
@@ -135,36 +134,46 @@ class ContactViewController: UIViewController {
             ])
         }
         
-        let _ = self.tableView.then {
+        self.tableView.do {
             $0.delegate = self
             $0.dataSource = self
             $0.register(UITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: "header")
             $0.register(ContactTableCell.self, forCellReuseIdentifier: "cell")
             self.view.addSubview($0)
             
-            $0.setFullWidth(target: view)
-            $0.topAnchor.constraint(equalTo: textFieldView.bottomAnchor, constant: 15).isActive = true
-            $0.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+            NSLayoutConstraint.activate([
+                $0.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+                $0.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+                $0.topAnchor.constraint(equalTo: textFieldView.bottomAnchor, constant: 15),
+                $0.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            ])
         }
         
-        let _ = self.searchedTableView.then {
+        self.searchedTableView.do {
             $0.delegate = self
             $0.dataSource = self
             $0.register(ContactTableCell.self, forCellReuseIdentifier: "searchedCell")
             self.view.addSubview($0)
             
-            $0.setFullWidth(target: view)
-            $0.topAnchor.constraint(equalTo: textFieldView.bottomAnchor, constant: 15).isActive = true
-            $0.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+            NSLayoutConstraint.activate([
+                $0.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+                $0.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+                $0.topAnchor.constraint(equalTo: textFieldView.bottomAnchor, constant: 15),
+                $0.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            ])
             
             $0.isHidden = true
         }
         
-        let _ = self.notFoundView.then {
+        self.notFoundView.do {
             self.view.addSubview($0)
-            $0.setFullWidth(target: view)
-            $0.topAnchor.constraint(equalTo: textFieldView.bottomAnchor, constant: 15).isActive = true
-            $0.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+            
+            NSLayoutConstraint.activate([
+                $0.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+                $0.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+                $0.topAnchor.constraint(equalTo: textFieldView.bottomAnchor, constant: 15),
+                $0.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            ])
             
             $0.isHidden = true
         }
@@ -204,7 +213,7 @@ class ContactViewController: UIViewController {
                 .font: UIFont.forTextField
             ])
             
-            if FriendList.shared.friendsWhoseNameContains(string: text).isEmpty {
+            if FriendManager.shared.friendsWhoseNameContains(string: text).isEmpty {
                 self.viewState = .searchButNotFound
             } else {
                 self.viewState = .searchAndFound
@@ -239,27 +248,30 @@ extension ContactViewController: UITextFieldDelegate {
 
 extension ContactViewController: UITableViewDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return tableView == self.tableView ? FriendList.shared.sortedFriendWithKey.count : 1
+        return tableView == self.tableView ? FriendManager.shared.sortedFriendWithKey.count : 1
     }
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return tableView == self.tableView ? Constants.ContactView.ViewHeight.header : 0
     }
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return tableView == self.tableView ? Constants.ContactView.ViewHeight.footer : 0
+        return tableView == self.tableView ? Constants.ContactView.ViewHeight.footer : .leastNormalMagnitude
     }
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return UITableViewHeaderFooterView().then {
-            let label = UILabel().then {
-                $0.text = FriendList.shared.sortedFriendWithKey[section].key
+        return UITableViewHeaderFooterView().then { header in
+            header.backgroundView = UIView().then {
+                $0.backgroundColor = .background
+            }
+            UILabel().do {
+                $0.text = FriendManager.shared.sortedFriendWithKey[section].key
                 $0.textColor = .white
                 $0.font = .forContactTableSection
                 $0.translatesAutoresizingMaskIntoConstraints = false
+                header.addSubview($0)
+                NSLayoutConstraint.activate([
+                    $0.centerYAnchor.constraint(equalTo: header.centerYAnchor),
+                    $0.leadingAnchor.constraint(equalTo: header.leadingAnchor, constant: Constants.ContactView.Padding.sectionLeading),
+                ])
             }
-            $0.addSubview(label)
-            NSLayoutConstraint.activate([
-                label.centerYAnchor.constraint(equalTo: $0.centerYAnchor),
-                label.leadingAnchor.constraint(equalTo: $0.leadingAnchor, constant: Constants.ContactView.Padding.sectionLeading),
-            ])
         }
     }
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
@@ -281,7 +293,7 @@ extension ContactViewController: UITableViewDelegate {
         }
         
         let contactDetailViewController = ContactDetailViewController().then {
-            $0.setFriend(with: tableView == self.tableView ? FriendList.shared.sortedFriendWithKey[indexPath.section].friends[indexPath.row] : FriendList.shared.friendsWhoseNameContains(string: self.textFieldView.textField.text!)[indexPath.row])
+            $0.setFriend(with: tableView == self.tableView ? FriendManager.shared.sortedFriendWithKey[indexPath.section].friends[indexPath.row] : FriendManager.shared.friendsWhoseNameContains(string: self.textFieldView.textField.text!)[indexPath.row])
         }
         self.navigationController!.pushViewController(contactDetailViewController, animated: true)
     }
@@ -297,16 +309,16 @@ extension ContactViewController: UITableViewDelegate {
 }
 extension ContactViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return tableView == self.tableView ? FriendList.shared.sortedFriendWithKey[section].friends.count : FriendList.shared.friendsWhoseNameContains(string: self.textFieldView.textField.text!).count
+        return tableView == self.tableView ? FriendManager.shared.sortedFriendWithKey[section].friends.count : FriendManager.shared.friendsWhoseNameContains(string: self.textFieldView.textField.text!).count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if tableView == self.tableView {
             return (tableView.dequeueReusableCell(withIdentifier: "cell") as! ContactTableCell).then {
-                $0.setFriend(with: FriendList.shared.sortedFriendWithKey[indexPath.section].friends[indexPath.row])
+                $0.setFriend(with: FriendManager.shared.sortedFriendWithKey[indexPath.section].friends[indexPath.row])
             }
         } else {
             return (tableView.dequeueReusableCell(withIdentifier: "searchedCell") as! ContactTableCell).then {
-                $0.setFriend(with: FriendList.shared.friendsWhoseNameContains(string: self.textFieldView.textField.text!)[indexPath.row], searchKeyword: self.textFieldView.textField.text!)
+                $0.setFriend(with: FriendManager.shared.friendsWhoseNameContains(string: self.textFieldView.textField.text!)[indexPath.row], searchKeyword: self.textFieldView.textField.text!)
             }
         }
     }
@@ -386,7 +398,6 @@ class ContactTableCell: UITableViewCell {
         }
         
         if searchKeyword != nil {
-            print(searchKeyword!)
             var range = NSRange(location: 0, length: friend.name.count)
             
             while range.location != NSNotFound {

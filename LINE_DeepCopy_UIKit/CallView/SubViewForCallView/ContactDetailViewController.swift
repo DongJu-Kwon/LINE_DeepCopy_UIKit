@@ -29,19 +29,24 @@ class ContactDetailViewController: UIViewController {
         self.navigationItem.titleView = self.navigationTitleLabel
         self.view.backgroundColor = .background
         
-        let _ = profileView.then {
+        profileView.do {
             self.view.addSubview($0)
-            $0.setFullWidth(target: self.view)
-            $0.setHeight(Constants.ContactDetailView.ProfileView.ViewHeight.itself)
-            profileViewTopAnchor = $0.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).then {
-                $0.isActive = true
-            }
+            profileViewTopAnchor = $0.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor)
+            NSLayoutConstraint.activate([
+                $0.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+                $0.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+                $0.heightAnchor.constraint(equalToConstant: Constants.ContactDetailView.ProfileView.ViewHeight.itself),
+                profileViewTopAnchor
+            ])
         }
         
         let profileSubView = UIView().then {
             $0.translatesAutoresizingMaskIntoConstraints = false
             profileView.addSubview($0)
-            $0.setHorizontalMargin(target: profileView, Constants.ContactDetailView.ProfileView.Padding.horizontal)
+            NSLayoutConstraint.activate([
+                $0.leadingAnchor.constraint(equalTo: profileView.leadingAnchor, constant: Constants.ContactDetailView.ProfileView.Padding.horizontal),
+                $0.trailingAnchor.constraint(equalTo: profileView.trailingAnchor, constant: -Constants.ContactDetailView.ProfileView.Padding.horizontal)
+            ])
         }
         
         let friendNameLabel = UILabel().then {
@@ -65,30 +70,39 @@ class ContactDetailViewController: UIViewController {
         }
         
         let chatCallButtonView = UIView().then {
-            $0.layer.addSublayer(CALayer().then {
-                $0.backgroundColor = UIColor.borderGray.cgColor
-                $0.frame = CGRect(x: 0, y: Constants.ContactDetailView.ButtonView.ViewHeight.itself - 0.2, width: view.frame.size.width, height: 0.2)
-            })
+            $0.addBorder(y: Constants.ContactDetailView.ButtonView.ViewHeight.itself, width: view.frame.width)
             $0.translatesAutoresizingMaskIntoConstraints = false
             self.view.addSubview($0)
-            $0.setFullWidth(target: profileView)
-            $0.setHeight(Constants.ContactDetailView.ButtonView.ViewHeight.itself)
+            NSLayoutConstraint.activate([
+                $0.leadingAnchor.constraint(equalTo: profileView.leadingAnchor),
+                $0.trailingAnchor.constraint(equalTo: profileView.trailingAnchor),
+                $0.heightAnchor.constraint(equalToConstant: Constants.ContactDetailView.ButtonView.ViewHeight.itself),
+            ])
         }
         
         let toChatButton = ChatCallButton(for: .chat).then {
             chatCallButtonView.addSubview($0)
-            $0.setWidth(view.frame.size.width/3)
-            $0.setFullHeight(target: chatCallButtonView)
+            NSLayoutConstraint.activate([
+                $0.widthAnchor.constraint(equalToConstant: self.view.frame.size.width/3),
+                $0.topAnchor.constraint(equalTo: chatCallButtonView.topAnchor),
+                $0.bottomAnchor.constraint(equalTo: chatCallButtonView.bottomAnchor)
+            ])
         }
         let toVoiceCallButton = ChatCallButton(for: .voice).then {
             chatCallButtonView.addSubview($0)
-            $0.setWidth(view.frame.size.width/3)
-            $0.setFullHeight(target: chatCallButtonView)
+            NSLayoutConstraint.activate([
+                $0.widthAnchor.constraint(equalToConstant: self.view.frame.size.width/3),
+                $0.topAnchor.constraint(equalTo: chatCallButtonView.topAnchor),
+                $0.bottomAnchor.constraint(equalTo: chatCallButtonView.bottomAnchor)
+            ])
         }
         let toVideoCallButton = ChatCallButton(for: .video).then {
             chatCallButtonView.addSubview($0)
-            $0.setWidth(view.frame.size.width/3)
-            $0.setFullHeight(target: chatCallButtonView)
+            NSLayoutConstraint.activate([
+                $0.widthAnchor.constraint(equalToConstant: self.view.frame.size.width/3),
+                $0.topAnchor.constraint(equalTo: chatCallButtonView.topAnchor),
+                $0.bottomAnchor.constraint(equalTo: chatCallButtonView.bottomAnchor)
+            ])
         }
         
         NSLayoutConstraint.activate([
@@ -116,25 +130,25 @@ class ContactDetailViewController: UIViewController {
         ])
         
         if self.navigationController!.viewControllers[self.navigationController!.viewControllers.count - 2] is CallViewController {
-            historyTableView.delegate = self
-            historyTableView.dataSource = self
-            historyTableView.register(UITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: "header")
-            historyTableView.register(ContactDetailTableCell.self, forCellReuseIdentifier: "cell")
-            historyTableView.tableFooterView = UIView(frame: .zero)
-            historyTableView.sectionFooterHeight = 0
-            historyTableView.separatorStyle = .none
+            historyTableView.do {
+                $0.delegate = self
+                $0.dataSource = self
+                $0.register(UITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: "header")
+                $0.register(ContactDetailTableCell.self, forCellReuseIdentifier: "cell")
+                $0.tableFooterView = UIView(frame: .zero)
+                $0.sectionFooterHeight = 0
+                $0.separatorStyle = .none
                 
-            self.view.addSubview(historyTableView)
-            historyTableView.setFullWidth(target: self.view)
+                self.view.addSubview($0)
+                self.historyTableViewBottomAnchor = self.historyTableView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: Constants.ContactDetailView.ProfileView.ViewHeight.itself)
                 
-            NSLayoutConstraint.activate([
-                historyTableView.topAnchor.constraint(equalTo: chatCallButtonView.bottomAnchor),
-            ])
-            self.historyTableViewBottomAnchor = self.historyTableView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: Constants.ContactDetailView.ProfileView.ViewHeight.itself).then {
-                $0.isActive = true
+                NSLayoutConstraint.activate([
+                    $0.topAnchor.constraint(equalTo: chatCallButtonView.bottomAnchor),
+                    $0.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+                    $0.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+                    self.historyTableViewBottomAnchor
+                ])
             }
-            
-            print(self.historyTableView.contentSize)
         }
         
         /*
@@ -197,7 +211,6 @@ extension ContactDetailViewController: UITableViewDelegate {
     }
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let scrollPosition = scrollView.contentOffset.y
-        print(scrollPosition)
         
         self.navigationTitleLabel.attributedText = NSAttributedString(string: friend.name, attributes: [
             .foregroundColor: UIColor.white.withAlphaComponent(min(max(0, scrollPosition/Constants.ContactDetailView.ProfileView.Padding.alphaBottom), 1)),
@@ -340,7 +353,7 @@ class ContactDetailTableCell: UITableViewCell {
         case .receiver(_):
             callFromImageView.image = UIImage(systemName: "arrow.down.backward")!.forContactDetailFrom
         }
-        timeTextLabel.text = with.date.filterBeforeHoursWithKST
+        timeTextLabel.text = with.timestamp.filterBeforeHoursWithKST
         callTypeTextLabel.text = "\(with.callType == .voice ? "음성" : "영상")통화"
         switch with.fromType {
         case .sender(.cancelled):

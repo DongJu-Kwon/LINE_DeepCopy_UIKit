@@ -27,11 +27,13 @@ class CallViewController: UIViewController {
         trailingBarItem.button.addTarget(self, action: #selector(presentContactView), for: .touchUpInside)
         navigationItem.rightBarButtonItem = trailingBarItem
         
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.register(CallTableCell.self, forCellReuseIdentifier: "cell")
-        tableView.separatorStyle = .none
-        tableView.backgroundColor = .background
+        tableView.do {
+            $0.delegate = self
+            $0.dataSource = self
+            $0.register(CallTableCell.self, forCellReuseIdentifier: "cell")
+            $0.separatorStyle = .none
+            $0.backgroundColor = .background
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -42,10 +44,10 @@ class CallViewController: UIViewController {
     }
     
     func updateFriendsWhoHaveCallHistory() {
-        friendsWhoHaveCallHistory = FriendList.shared.friendArray.filter {
+        friendsWhoHaveCallHistory = FriendManager.shared.friendArray.filter {
             !$0.callHistory.isEmpty
         }.sorted {
-            $0.lastCallHistroy!.date > $1.lastCallHistroy!.date
+            $0.lastCallHistroy!.timestamp > $1.lastCallHistroy!.timestamp
         }
     }
     
@@ -57,29 +59,43 @@ class CallViewController: UIViewController {
         if friendsWhoHaveCallHistory.isEmpty {
             let informButton = InformButton("연락처에서 전화하기").then {
                 self.view.addSubview($0)
-                $0.setCenter(target: self.view)
-                $0.setWidth(132)
-                $0.setHeight(36)
+                NSLayoutConstraint.activate([
+                    $0.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+                    $0.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
+                    $0.widthAnchor.constraint(equalToConstant: 132),
+                    $0.heightAnchor.constraint(equalToConstant: 36),
+                ])
             }
             
             let informContentLabel = InformContentLabel("LINE 음성통화로 언제 어디서나 친구와 대화를 나눌 수 있습니다.").then {
                 self.view.addSubview($0)
-                $0.setBottomMargin(target: informButton, 18)
-                $0.setHorizontalMargin(target: self.view, 48)
+                NSLayoutConstraint.activate([
+                    $0.bottomAnchor.constraint(equalTo: informButton.topAnchor, constant: -18),
+                    $0.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 48),
+                    $0.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -48)
+                ])
             }
             
             let _/*informTitleLabel*/ = InformTitleLabel("지금 LINE 음성통화를 사용해 보세요.").then {
                 self.view.addSubview($0)
-                $0.setBottomMargin(target: informContentLabel, 5)
-                $0.setHorizontalMargin(target: self.view, 0)
+                NSLayoutConstraint.activate([
+                    $0.bottomAnchor.constraint(equalTo: informContentLabel.topAnchor, constant: 5),
+                    $0.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+                    $0.trailingAnchor.constraint(equalTo: self.view.trailingAnchor)
+                ])
             }
             
             informButton.addTarget(self, action: #selector(presentContactView), for: .touchUpInside)
         } else {
-            self.view.addSubview(tableView)
-            
-            tableView.setFullWidth(target: self.view)
-            tableView.setFullHeight(target: self.view)
+            tableView.do {
+                self.view.addSubview($0)
+                NSLayoutConstraint.activate([
+                    $0.topAnchor.constraint(equalTo: self.view.topAnchor),
+                    $0.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
+                    $0.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+                    $0.trailingAnchor.constraint(equalTo: self.view.trailingAnchor)
+                ])
+            }
         }
     }
     
@@ -141,7 +157,7 @@ private class InformTitleLabel: CustomLabel {
     override init(_ string: String) {
         super.init(string)
         
-        self.font = .forInformTitle
+        self.font = .forCallViewInformTitle
         self.textColor = .white
     }
     
@@ -154,7 +170,7 @@ private class InformContentLabel: CustomLabel {
     override init(_ string: String) {
         super.init(string)
         
-        self.font = .forInformContent
+        self.font = .forCallViewInformContent
         self.textColor = .gray
         self.numberOfLines = 2
 //        self.lineBreakMode = .byTruncatingTail
@@ -170,7 +186,7 @@ private class InformButton: UIButton {
         super.init(frame: CGRect.zero)
         
         self.setTitle(string, for: .normal)
-        self.titleLabel!.font = .forInformButton
+        self.titleLabel!.font = .forCallViewInformButton
         
         self.layer.cornerRadius = 5.0
         self.layer.borderWidth = 1.3
@@ -314,13 +330,13 @@ class CallTableCell: UITableViewCell {
             callFromImageView.image = UIImage(systemName: "arrow.down.backward")!.forCallCellFrom
         }
         
-        switch lastCallHistory.date {
+        switch lastCallHistory.timestamp {
         case ..<Calendar.current.date(byAdding: .day, value: -6, to: Date().startOfDay)!:
-            callDateLabel.text = lastCallHistory.date.monthAndDaysWithKST
+            callDateLabel.text = lastCallHistory.timestamp.monthAndDaysWithKST
         case ..<Date().startOfDay:
-            callDateLabel.text = lastCallHistory.date.weekday
+            callDateLabel.text = lastCallHistory.timestamp.weekday
         default:
-            callDateLabel.text = lastCallHistory.date.filterBeforeHoursWithKST
+            callDateLabel.text = lastCallHistory.timestamp.filterBeforeHoursWithKST
         }
         switch lastCallHistory.callType {
         case .voice:

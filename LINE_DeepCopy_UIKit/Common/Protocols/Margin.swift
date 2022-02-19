@@ -15,7 +15,7 @@ protocol Margin {
     func setBottomMargin(target: UIView, _ size: CGFloat)
     func setHorizontalMargin(target: UIView, _ size: CGFloat)
 }
-
+/*
 extension Margin where Self: UIView {
     func setWidth(_ size: CGFloat) {
         self.widthAnchor.constraint(equalToConstant: size).isActive = true
@@ -59,3 +59,4 @@ extension Margin where Self: UIView {
 }
 
 extension UIView: Margin {}
+*/

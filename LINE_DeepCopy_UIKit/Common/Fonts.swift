@@ -26,15 +26,27 @@ extension UIFont {
         UIFont.systemFont(ofSize: 15, weight: .bold)
     }
     
-    static var forInformTitle: UIFont {
+    static var forSearchViewNoneHistory: UIFont {
+        UIFont.systemFont(ofSize: 13, weight: .regular)
+    }
+    
+    static var forSearchViewHistoryTitle: UIFont {
+        UIFont.systemFont(ofSize: 14, weight: .bold)
+    }
+    
+    static var forSearchViewAutoSaveButton: UIFont {
+        UIFont.systemFont(ofSize: 12, weight: .regular)
+    }
+    
+    static var forCallViewInformTitle: UIFont {
         UIFont.systemFont(ofSize: 16, weight: .semibold)
     }
     
-    static var forInformContent: UIFont {
+    static var forCallViewInformContent: UIFont {
         UIFont.systemFont(ofSize: 13.2, weight: .regular)
     }
     
-    static var forInformButton: UIFont {
+    static var forCallViewInformButton: UIFont {
         UIFont.systemFont(ofSize: 13, weight: .semibold)
     }
     

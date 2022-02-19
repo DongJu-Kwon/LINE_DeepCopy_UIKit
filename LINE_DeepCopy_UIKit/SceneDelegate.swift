@@ -143,7 +143,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         ].shuffled().map {
             Friend(image: imageArray.randomElement()!, name: $0)
         }.forEach {
-            FriendList.shared.friendArray.append($0)
+            FriendManager.shared.friendArray.append($0)
         }
         
         let friend1 = Friend(image: imageArray.randomElement()!, name: "일이삼사오육칠팔구십일이삼사오육칠팔구십")
@@ -163,7 +163,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         ].forEach {
             friend1.callHistory.append($0)
         }
-        FriendList.shared.friendArray.append(friend1)
+        FriendManager.shared.friendArray.append(friend1)
         
         let dateFormatter = DateFormatter().then {
             $0.dateFormat = "yyyy-MM-dd HH:mm:ss"
@@ -185,7 +185,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         ].forEach {
             friend3.callHistory.append($0)
         }
-        FriendList.shared.friendArray.append(friend3)
+        FriendManager.shared.friendArray.append(friend3)
         
         let friend4 = Friend(image: imageArray.randomElement()!, name: "일이삼사오육칠팔구십일이삼사오육칠팔구십")
         [
@@ -201,6 +201,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         ].forEach {
             friend4.callHistory.append($0)
         }
-        FriendList.shared.friendArray.append(friend4)
+        FriendManager.shared.friendArray.append(friend4)
     }
 }

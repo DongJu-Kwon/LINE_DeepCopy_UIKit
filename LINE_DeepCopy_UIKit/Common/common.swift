@@ -258,7 +258,7 @@ class ProfileWithLineImageView: UIImageView {
     init() {
         super.init(frame: .zero)
         
-        addSubview(lineImageView)
+        self.addSubview(lineImageView)
         NSLayoutConstraint.activate([
             lineImageView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
             lineImageView.trailingAnchor.constraint(equalTo: self.trailingAnchor)
@@ -269,5 +269,35 @@ class ProfileWithLineImageView: UIImageView {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+extension UIView {
+    func addBorder(y: CGFloat, width: CGFloat) {
+        self.layer.addSublayer(CALayer().then {
+            $0.backgroundColor = UIColor.borderGray.cgColor
+            $0.frame = CGRect(x: 0, y: y - 0.5, width: width, height: 0.5)
+        })
+    }
+}
+
+extension UIAlertAction {
+    convenience init(title: String, style: UIAlertAction.Style) {
+        self.init(title: title, style: style, handler: nil)
+        
+        print(1)
+    }
+}
+
+extension UIAlertAction {
+    static var cancel: UIAlertAction {
+        return UIAlertAction(title: "취소", style: .cancel, handler: nil).then {
+            $0.setValue(UIColor(red: 89/255, green: 145/255, blue: 247/255, alpha: 1), forKey: "titleTextColor")
+        }
+    }
+    static func confirm(handler: ((UIAlertAction) -> Void)?) -> UIAlertAction {
+        return UIAlertAction(title: "확인", style: .default, handler: handler).then {
+            $0.setValue(UIColor(red: 89/255, green: 145/255, blue: 247/255, alpha: 1), forKey: "titleTextColor")
+        }
     }
 }

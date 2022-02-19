@@ -29,13 +29,13 @@ class Friend {
         
         var fromType: FromType
         var callType: CallType
-        var date: Date
+        var timestamp: Date
         unowned var parent: Friend
         
         init(type: CallType, from: FromType, date: Date, parent: Friend) {
             self.callType = type
             self.fromType = from
-            self.date = date
+            self.timestamp = date
             self.parent = parent
         }
     }
@@ -88,7 +88,7 @@ class Friend {
     func groupKeyWithDate(history: CallHistory) -> PastDateGroupKey {
         let startOfToday = Date().startOfDay
         
-        switch history.date {
+        switch history.timestamp {
         case startOfToday...:
             return .today
         case startOfToday.previousDay...:
@@ -123,7 +123,7 @@ class Friend {
 //            ($0, dictionary[$0]!.sorted())
 //        }
         let dictionary = Dictionary(grouping: self.callHistory) {
-            $0.date.startOfDay
+            $0.timestamp.startOfDay
         }
         return Array(dictionary.keys).sorted().reversed().map {
             ($0, dictionary[$0]!.sorted())
@@ -143,20 +143,20 @@ extension Friend: Equatable, Hashable {
 
 extension Friend.CallHistory: Equatable, Hashable, Comparable {
     static func == (lhs: Friend.CallHistory, rhs: Friend.CallHistory) -> Bool {
-        return lhs.date == rhs.date
+        return lhs.timestamp == rhs.timestamp
     }
     
     static func < (lhs: Friend.CallHistory, rhs: Friend.CallHistory) -> Bool {
-        return lhs.date > rhs.date
+        return lhs.timestamp > rhs.timestamp
     }
     
     func hash(into hasher: inout Hasher) {
-        hasher.combine(self.date)
+        hasher.combine(self.timestamp)
     }
 }
 
-class FriendList {
-    static let shared = FriendList()
+class FriendManager {
+    static let shared = FriendManager()
     private init() {}
     
     var friendArray: [Friend] = []
@@ -188,7 +188,7 @@ class FriendList {
     
     public var sortedFriendWithKey: [(key: String, friends: [Friend])] {
         let dictionary = Dictionary(grouping: self.friendArray) {
-            FriendList.shared.groupKey(string: $0.name)
+            FriendManager.shared.groupKey(string: $0.name)
         }
         
         return Array(dictionary.keys).sorted {

@@ -14,8 +14,14 @@ struct Constants {
         }
     }
     struct NavigationBar {
+        struct ViewHeight {
+            static let searchBar: CGFloat = 40
+        }
         struct ImageHeight {
             static let xmark: CGFloat = 18
+        }
+        struct Padding {
+            static let searchBarHorizontal: CGFloat = -82
         }
     }
     struct TextField {
@@ -33,8 +39,21 @@ struct Constants {
             static let textfieldLeading: CGFloat = 7
             static let textfieldTrailing: CGFloat = -7
             static let barcodeTrailing: CGFloat = -13
-            
-//            static let textfieldTrailingForContact: CGFloat = -15
+        }
+    }
+    
+    struct SearchView {
+        struct HistoryView {
+            struct ViewHeight {
+                static let noneRecentKeyword: CGFloat = 159
+                static let autoSaveButton: CGFloat = 18
+            }
+            struct Padding {
+                static let top: CGFloat = 8
+                static let leading: CGFloat = 15
+                static let noneHistoryInformCenterY: CGFloat = 17
+                static let autoSaveButtonTop: CGFloat = 14
+            }
         }
     }
     
